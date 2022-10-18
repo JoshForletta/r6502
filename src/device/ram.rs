@@ -53,7 +53,6 @@ where
 {
     type Output = Data;
     fn index(&self, index: Address) -> &Self::Output {
-        dbg!(&index);
         self.m.index((index - self.address_range.start).into())
     }
 }
