@@ -1,7 +1,5 @@
 use std::{error::Error, fmt::Display};
 
-use crate::core::BitWidth;
-
 #[derive(Debug)]
 pub enum EmulationError {
     CpuError(CpuError),

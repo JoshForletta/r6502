@@ -29,24 +29,18 @@ bitflags! {
 
 // Rust 6502
 #[derive(Default)]
-pub struct R6502<B>
-where
-    B: Bus,
-{
-    ps: PS,  // Processor Status Register
-    a: u8,   // Accumulator Register
-    x: u8,   // X Index Regester
-    y: u8,   // Y Index Register
-    pc: u16, // Program Counter
-    sp: u8,  // Stack Pointer
-    bus: B,  // 16bit address bus and 8bit data bus
+pub struct R6502 {
+    ps: PS,   // Processor Status Register
+    a: u8,    // Accumulator Register
+    x: u8,    // X Index Regester
+    y: u8,    // Y Index Register
+    pc: u16,  // Program Counter
+    sp: u8,   // Stack Pointer
+    bus: Bus, // 16bit address bus and 8bit data bus
     extra_cycles: u8,
 }
 
-impl<B> Debug for R6502<B>
-where
-    B: Bus,
-{
+impl Debug for R6502 {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("R6502")
             .field("Processor Status", &self.ps)
@@ -60,10 +54,7 @@ where
     }
 }
 
-impl<B> R6502<B>
-where
-    B: Bus,
-{
+impl R6502 {
     pub fn new() -> Self {
         Default::default()
     }
@@ -95,7 +86,7 @@ where
         if self.extra_cycles == 0 {
             let opcode = self.read()?;
             match INSTRUCTION_SET.get::<usize>(opcode.into()) {
-                Some(i) => (), //i(&mut self),
+                Some(_) => (), //i(&mut self),
                 None => return Err(Box::new(CpuError::MissingInstuction(opcode))),
             };
         } else {

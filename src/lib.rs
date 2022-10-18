@@ -1,5 +1,4 @@
 pub mod bus;
-pub mod core;
 pub mod device;
 pub mod error;
 pub mod instruction;

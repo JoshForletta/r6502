@@ -5,24 +5,19 @@ use std::{
 
 use crate::{device::Device, error::BusError};
 
-pub trait Bus
-where
-    Self: Debug + Default,
-{
-    fn read(&self, addr: u16) -> Result<u8, BusError>;
-    fn write(&mut self, addr: u16, data: u8) -> Result<(), BusError>;
-    fn mount_device(&mut self, device: Box<dyn Device>);
-}
-
 #[derive(Debug, Default)]
-pub struct DebugBus {
+pub struct Bus {
     address: Arc<Mutex<u16>>,
     data: Arc<Mutex<u8>>,
     devices: Vec<Box<dyn Device>>,
 }
 
-impl Bus for DebugBus {
-    fn read(&self, addr: u16) -> Result<u8, BusError> {
+impl Bus {
+    pub fn new() -> Self {
+        Default::default()
+    }
+
+    pub fn read(&self, addr: u16) -> Result<u8, BusError> {
         match self.address.lock() {
             Ok(mut m) => *m = addr,
             Err(_) => (),
@@ -37,7 +32,7 @@ impl Bus for DebugBus {
         Err(BusError::NoDevice(addr))
     }
 
-    fn write(&mut self, addr: u16, data: u8) -> Result<(), BusError> {
+    pub fn write(&mut self, addr: u16, data: u8) -> Result<(), BusError> {
         let mut no_device = true;
 
         match self.address.lock() {
@@ -64,13 +59,7 @@ impl Bus for DebugBus {
         }
     }
 
-    fn mount_device(&mut self, device: Box<dyn Device>) {
+    pub fn mount_device(&mut self, device: Box<dyn Device>) {
         self.devices.push(device);
-    }
-}
-
-impl DebugBus {
-    pub fn new() -> Self {
-        Default::default()
     }
 }
