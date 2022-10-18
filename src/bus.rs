@@ -1,39 +1,28 @@
-use std::sync::{Arc, Mutex};
+use std::{
+    fmt::Debug,
+    sync::{Arc, Mutex},
+};
 
-use crate::{core::BitWidth, device::Device};
+use crate::{device::Device, error::BusError};
 
-pub enum BusError {
-    NoDevice,
-}
-
-pub trait Bus<Address, Data>
+pub trait Bus
 where
-    Self: Default,
-    Address: BitWidth,
-    Data: BitWidth,
+    Self: Debug + Default,
 {
-    fn read(&self, addr: Address) -> Result<Data, BusError>;
-    fn write(&mut self, addr: Address, data: Data) -> Result<(), BusError>;
-    fn mount_device(&mut self, device: Box<dyn Device<Address, Data>>);
+    fn read(&self, addr: u16) -> Result<u8, BusError>;
+    fn write(&mut self, addr: u16, data: u8) -> Result<(), BusError>;
+    fn mount_device(&mut self, device: Box<dyn Device>);
 }
 
 #[derive(Debug, Default)]
-pub struct DebugBus<Address, Data>
-where
-    Address: BitWidth,
-    Data: BitWidth,
-{
-    address: Arc<Mutex<Address>>,
-    data: Arc<Mutex<Data>>,
-    devices: Vec<Box<dyn Device<Address, Data>>>,
+pub struct DebugBus {
+    address: Arc<Mutex<u16>>,
+    data: Arc<Mutex<u8>>,
+    devices: Vec<Box<dyn Device>>,
 }
 
-impl<Address, Data> Bus<Address, Data> for DebugBus<Address, Data>
-where
-    Address: BitWidth,
-    Data: BitWidth,
-{
-    fn read(&self, addr: Address) -> Result<Data, BusError> {
+impl Bus for DebugBus {
+    fn read(&self, addr: u16) -> Result<u8, BusError> {
         match self.address.lock() {
             Ok(mut m) => *m = addr,
             Err(_) => (),
@@ -45,10 +34,10 @@ where
             }
         }
 
-        Err(BusError::NoDevice)
+        Err(BusError::NoDevice(addr))
     }
 
-    fn write(&mut self, addr: Address, data: Data) -> Result<(), BusError> {
+    fn write(&mut self, addr: u16, data: u8) -> Result<(), BusError> {
         let mut no_device = true;
 
         match self.address.lock() {
@@ -69,28 +58,19 @@ where
         }
 
         if no_device {
-            Err(BusError::NoDevice)
+            Err(BusError::NoDevice(addr))
         } else {
             Ok(())
         }
     }
 
-    fn mount_device(&mut self, device: Box<dyn Device<Address, Data>>) {
+    fn mount_device(&mut self, device: Box<dyn Device>) {
         self.devices.push(device);
     }
 }
 
-impl<Address, Data> DebugBus<Address, Data>
-where
-    Address: BitWidth,
-    Data: BitWidth,
-{
+impl DebugBus {
     pub fn new() -> Self {
         Default::default()
-        // Self {
-        //     address: Arc::new(Mutex::new(Address::from(0))),
-        //     data: Arc::new(Mutex::new(Data::from(0))),
-        //     devices: Vec::new(),
-        // }
     }
 }

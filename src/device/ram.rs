@@ -3,23 +3,15 @@ use std::{
     ops::{Index, IndexMut, Range},
 };
 
-use crate::{core::BitWidth, device::Device};
+use crate::device::Device;
 
 #[derive(Default)]
-pub struct Ram<Address, Data>
-where
-    Address: BitWidth,
-    Data: BitWidth,
-{
-    address_range: Range<Address>,
-    m: Vec<Data>,
+pub struct Ram {
+    address_range: Range<u16>,
+    m: Vec<u8>,
 }
 
-impl<Address, Data> Debug for Ram<Address, Data>
-where
-    Address: BitWidth,
-    Data: BitWidth,
-{
+impl Debug for Ram {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("Ram")
             .field(
@@ -33,46 +25,31 @@ where
     }
 }
 
-impl<Address, Data> Ram<Address, Data>
-where
-    Address: BitWidth,
-    Data: BitWidth,
-{
-    pub fn with_address_range(start: Address, end: Address) -> Self {
+impl Ram {
+    pub fn with_address_range(start: u16, end: u16) -> Self {
         Self {
             address_range: Range { start, end },
-            m: vec![Data::from(0); (end - start).into()],
+            m: vec![u8::from(0); (end - start).into()],
         }
     }
 }
 
-impl<Address, Data> Index<Address> for Ram<Address, Data>
-where
-    Address: BitWidth,
-    Data: BitWidth,
-{
-    type Output = Data;
-    fn index(&self, index: Address) -> &Self::Output {
-        self.m.index((index - self.address_range.start).into())
+impl Index<u16> for Ram {
+    type Output = u8;
+    fn index(&self, index: u16) -> &Self::Output {
+        self.m
+            .index(Into::<usize>::into(index - self.address_range.start))
     }
 }
 
-impl<Address, Data> IndexMut<Address> for Ram<Address, Data>
-where
-    Address: BitWidth,
-    Data: BitWidth,
-{
-    fn index_mut(&mut self, index: Address) -> &mut Self::Output {
-        self.m.index_mut(index.into())
+impl IndexMut<u16> for Ram {
+    fn index_mut(&mut self, index: u16) -> &mut Self::Output {
+        self.m.index_mut(Into::<usize>::into(index))
     }
 }
 
-impl<Address, Data> Device<Address, Data> for Ram<Address, Data>
-where
-    Address: BitWidth,
-    Data: BitWidth,
-{
-    fn address_range(&self) -> &std::ops::Range<Address> {
+impl Device for Ram {
+    fn address_range(&self) -> &std::ops::Range<u16> {
         &self.address_range
     }
 }

@@ -3,20 +3,17 @@ use std::{
     ops::{Index, IndexMut, Range},
 };
 
-use crate::core::BitWidth;
-
 pub mod ram;
 pub use ram::Ram;
 
-pub trait Device<Address, Data>
+pub trait Device
 where
-    Self: Debug + Index<Address, Output = Data> + IndexMut<Address, Output = Data>,
-    Address: BitWidth,
-    Data: BitWidth,
+    Self: Debug + Index<u16, Output = u8> + IndexMut<u16, Output = u8>,
 {
-    fn address_range(&self) -> &Range<Address>;
+    fn address_range(&self) -> &Range<u16>;
 
-    fn contains(&self, a: Address) -> bool {
+    #[inline]
+    fn contains(&self, a: u16) -> bool {
         self.address_range().contains(&a)
     }
 }

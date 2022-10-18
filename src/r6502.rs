@@ -1,9 +1,17 @@
-use std::fmt::Debug;
+use std::{error::Error, fmt::Debug, num::Wrapping};
 
 use bitflags::bitflags;
 use byteorder::{ByteOrder, LittleEndian};
 
-use crate::{bus::Bus, device::Device};
+use crate::{
+    bus::Bus,
+    device::Device,
+    error::{BusError, CpuError},
+};
+
+pub struct Instruction {}
+
+const INSTRUCTION_SET: &[Instruction] = &[Instruction {}];
 
 // Processor Status Flags
 bitflags! {
@@ -23,7 +31,7 @@ bitflags! {
 #[derive(Default)]
 pub struct R6502<B>
 where
-    B: Bus<u16, u8>,
+    B: Bus,
 {
     ps: PS,  // Processor Status Register
     a: u8,   // Accumulator Register
@@ -31,12 +39,13 @@ where
     y: u8,   // Y Index Register
     pc: u16, // Program Counter
     sp: u8,  // Stack Pointer
-    bus: B,
+    bus: B,  // 16bit address bus and 8bit data bus
+    extra_cycles: u8,
 }
 
 impl<B> Debug for R6502<B>
 where
-    B: Bus<u16, u8> + Debug,
+    B: Bus,
 {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("R6502")
@@ -53,7 +62,7 @@ where
 
 impl<B> R6502<B>
 where
-    B: Bus<u16, u8>,
+    B: Bus,
 {
     pub fn new() -> Self {
         Default::default()
@@ -72,9 +81,27 @@ where
         ]);
     }
 
-    pub fn mount_device(&mut self, device: Box<dyn Device<u16, u8>>) {
+    pub fn mount_device(&mut self, device: Box<dyn Device>) {
         self.bus.mount_device(device);
     }
 
-    pub fn clock() {}
+    fn read(&mut self) -> Result<u8, BusError> {
+        let r = self.bus.read(self.pc);
+        self.pc = (Wrapping(self.pc) + Wrapping(1)).0;
+        r
+    }
+
+    pub fn clock(&mut self) -> Result<(), Box<dyn Error>> {
+        if self.extra_cycles == 0 {
+            let opcode = self.read()?;
+            match INSTRUCTION_SET.get::<usize>(opcode.into()) {
+                Some(i) => (), //i(&mut self),
+                None => return Err(Box::new(CpuError::MissingInstuction(opcode))),
+            };
+        } else {
+            self.extra_cycles -= 1;
+        }
+
+        Ok(())
+    }
 }
