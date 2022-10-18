@@ -1,5 +1,7 @@
 use std::{error::Error, fmt::Display};
 
+use crate::instruction::Instruction;
+
 #[derive(Debug)]
 pub enum EmulationError {
     CpuError(CpuError),
@@ -16,8 +18,6 @@ impl Display for EmulationError {
 }
 
 impl Error for EmulationError {}
-
-pub enum InstructionError {}
 
 #[derive(Debug)]
 pub enum CpuError {
@@ -56,3 +56,54 @@ impl Display for BusError {
 }
 
 impl Error for BusError {}
+
+#[derive(Debug)]
+pub enum DeviceError {
+    FailedGet(&'static str, u16, Option<Box<dyn Error>>),
+    FailedSet(&'static str, u16, u8, Option<Box<dyn Error>>),
+}
+
+impl Display for DeviceError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::FailedGet(d, a, Some(e)) => write!(
+                f,
+                "Device: '{d}' failed to get data at address ${:X}: {e}",
+                a,
+            ),
+            Self::FailedGet(d, a, _) => {
+                write!(f, "Device: '{d}' failed to get data at address ${:X}", a)
+            }
+            Self::FailedSet(d, a, data, Some(e)) => write!(
+                f,
+                "Device: '{d}' failed to set data: ${:X} to address: ${:X}: {e}",
+                data, a
+            ),
+            Self::FailedSet(d, a, data, _) => write!(
+                f,
+                "Device: '{d}' failed to set data: ${:X} to address: ${:X}",
+                data, a
+            ),
+        }
+    }
+}
+
+impl Error for DeviceError {}
+
+#[derive(Debug)]
+pub struct InstructionError {
+    pub instruction: Instruction,
+    pub error: Box<dyn Error>,
+}
+
+impl Display for InstructionError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "Instuction: ${:X}: {}",
+            self.instruction.opcode, self.error
+        )
+    }
+}
+
+impl Error for InstructionError {}

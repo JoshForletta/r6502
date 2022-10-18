@@ -25,7 +25,28 @@ impl Bus {
 
         for d in &self.devices {
             if d.contains(addr) {
-                return Ok(d[addr]);
+                match d.get(addr) {
+                    Ok(data) => return Ok(*data),
+                    Err(e) => return Err(BusError::FailedRead(addr, Some(Box::new(e)))),
+                };
+            }
+        }
+
+        Err(BusError::NoDevice(addr))
+    }
+
+    pub fn read_mut(&mut self, addr: u16) -> Result<&mut u8, BusError> {
+        match self.address.lock() {
+            Ok(mut m) => *m = addr,
+            Err(_) => (),
+        };
+
+        for d in &mut self.devices {
+            if d.contains(addr) {
+                match d.get_mut(addr) {
+                    Ok(data) => return Ok(data),
+                    Err(e) => return Err(BusError::FailedRead(addr, Some(Box::new(e)))),
+                };
             }
         }
 
@@ -48,7 +69,10 @@ impl Bus {
         for d in &mut self.devices {
             if d.contains(addr) {
                 no_device = false;
-                d[addr] = data;
+                match d.get_mut(addr) {
+                    Ok(target) => *target = data,
+                    Err(_) => (),
+                };
             }
         }
 

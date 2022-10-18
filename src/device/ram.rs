@@ -1,9 +1,6 @@
-use std::{
-    fmt::Debug,
-    ops::{Index, IndexMut, Range},
-};
+use std::{fmt::Debug, ops::Range};
 
-use crate::device::Device;
+use crate::{device::Device, error::DeviceError};
 
 #[derive(Default)]
 pub struct Ram {
@@ -34,22 +31,28 @@ impl Ram {
     }
 }
 
-impl Index<u16> for Ram {
-    type Output = u8;
-    fn index(&self, index: u16) -> &Self::Output {
-        self.m
-            .index(Into::<usize>::into(index - self.address_range.start))
-    }
-}
-
-impl IndexMut<u16> for Ram {
-    fn index_mut(&mut self, index: u16) -> &mut Self::Output {
-        self.m.index_mut(Into::<usize>::into(index))
-    }
-}
-
 impl Device for Ram {
     fn address_range(&self) -> &std::ops::Range<u16> {
         &self.address_range
+    }
+
+    fn get(&self, addr: u16) -> Result<&u8, DeviceError> {
+        match self
+            .m
+            .get(Into::<usize>::into(addr - self.address_range.start))
+        {
+            Some(d) => Ok(d),
+            None => Err(DeviceError::FailedGet("ram", addr, None)),
+        }
+    }
+
+    fn get_mut(&mut self, addr: u16) -> Result<&mut u8, DeviceError> {
+        match self
+            .m
+            .get_mut(Into::<usize>::into(addr - self.address_range.start))
+        {
+            Some(d) => Ok(d),
+            None => Err(DeviceError::FailedGet("ram", addr, None)),
+        }
     }
 }

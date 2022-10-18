@@ -1,19 +1,27 @@
-use std::{
-    fmt::Debug,
-    ops::{Index, IndexMut, Range},
-};
+use std::{error::Error, fmt::Debug, ops::Range};
 
 pub mod ram;
 pub use ram::Ram;
 
-pub trait Device
+use crate::error::DeviceError;
+
+pub trait Device<E = DeviceError>
 where
-    Self: Debug + Index<u16, Output = u8> + IndexMut<u16, Output = u8>,
+    Self: Debug,
+    E: Error,
 {
     fn address_range(&self) -> &Range<u16>;
 
     #[inline]
     fn contains(&self, a: u16) -> bool {
         self.address_range().contains(&a)
+    }
+
+    fn get(&self, addr: u16) -> Result<&u8, E>;
+    fn get_mut(&mut self, addr: u16) -> Result<&mut u8, E>;
+
+    fn set(&mut self, addr: u16, data: u8) -> Result<(), E> {
+        *self.get_mut(addr)? = data;
+        Ok(())
     }
 }
