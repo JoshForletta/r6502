@@ -1,7 +1,6 @@
 use std::{error::Error, fmt::Debug, num::Wrapping};
 
 use bitflags::bitflags;
-use byteorder::{ByteOrder, LittleEndian};
 
 use crate::{
     bus::Bus,
@@ -19,6 +18,7 @@ bitflags! {
         const I = 0b00000100; // Interupt disable
         const D = 0b00001000; // Decimal mode
         const B = 0b00010000; // BRK command
+        const P = 0b00100000; // Unused but will indicate page boundry cross
         const V = 0b01000000; // Overflow
         const N = 0b10000000; // Negative
     }
@@ -35,6 +35,7 @@ pub struct R6502 {
     pub sp: u8,   // Stack Pointer
     pub bus: Bus, // 16bit address bus and 8bit data bus
     pub extra_cycles: u8,
+    pub null_pointer: u8, // for implied addressing mode
 }
 
 impl Debug for R6502 {
@@ -47,6 +48,7 @@ impl Debug for R6502 {
             .field("Progam Counter", &format_args!("${:08X}", self.pc))
             .field("Stack Pointer", &format_args!("${:04X}", self.sp))
             .field("Bus", &self.bus)
+            .field("extra_cycles", &self.extra_cycles)
             .finish()
     }
 }
@@ -84,10 +86,7 @@ impl R6502 {
     }
 
     pub fn read_word(&mut self) -> Result<u16, BusError> {
-        let r = LittleEndian::read_u16(&[
-            self.bus.read(self.pc)?,
-            self.bus.read((Wrapping(self.pc) + Wrapping(1)).0)?,
-        ]);
+        let r = self.bus.read_word(self.pc)?;
 
         self.pc = (Wrapping(self.pc) + Wrapping(2)).0;
 
@@ -95,6 +94,8 @@ impl R6502 {
     }
 
     pub fn clock(&mut self) -> Result<(), Box<dyn Error>> {
+        self.ps.set(PS::P, false);
+
         if self.extra_cycles == 0 {
             let opcode = self.read()?;
             match INSTRUCTION_SET.get::<usize>(opcode.into()) {

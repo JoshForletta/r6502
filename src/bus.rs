@@ -1,7 +1,10 @@
 use std::{
     fmt::Debug,
+    num::Wrapping,
     sync::{Arc, Mutex},
 };
+
+use byteorder::{ByteOrder, LittleEndian};
 
 use crate::{device::Device, error::BusError};
 
@@ -51,6 +54,17 @@ impl Bus {
         }
 
         Err(BusError::NoDevice(addr))
+    }
+
+    pub fn read_word(&mut self, addr: u16) -> Result<u16, BusError> {
+        let r = LittleEndian::read_u16(&[
+            self.read(addr)?,
+            self.read((Wrapping(addr) + Wrapping(1)).0)?,
+        ]);
+
+        (Wrapping(addr) + Wrapping(2)).0;
+
+        Ok(r)
     }
 
     pub fn write(&mut self, addr: u16, data: u8) -> Result<(), BusError> {
