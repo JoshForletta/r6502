@@ -49,18 +49,40 @@ pub fn ldx(cpu: &mut R6502, am: AmFn) -> Result<(), Box<dyn Error>> {
 
 #[cfg(test)]
 mod tests {
-    #[test]
-    fn ldx_immediate() {}
+    use crate::test_utils::{test_parameterized_cpu_state, CpuState as CS};
 
     #[test]
-    fn ldx_zero_page() {}
+    fn ldx_immediate() {
+        let tests: &[(&[u8], CS, usize)] = &[];
+
+        test_parameterized_cpu_state(tests);
+    }
 
     #[test]
-    fn ldx_zero_page_y() {}
+    fn ldx_zero_page() {
+        let tests: &[(&[u8], CS, usize)] = &[];
+
+        test_parameterized_cpu_state(tests);
+    }
 
     #[test]
-    fn ldx_absolute() {}
+    fn ldx_zero_page_y() {
+        let tests: &[(&[u8], CS, usize)] = &[];
+
+        test_parameterized_cpu_state(tests);
+    }
 
     #[test]
-    fn ldx_absolute_y() {}
+    fn ldx_absolute() {
+        let tests: &[(&[u8], CS, usize)] = &[];
+
+        test_parameterized_cpu_state(tests);
+    }
+
+    #[test]
+    fn ldx_absolute_y() {
+        let tests: &[(&[u8], CS, usize)] = &[];
+
+        test_parameterized_cpu_state(tests);
+    }
 }

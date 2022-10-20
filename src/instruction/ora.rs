@@ -70,27 +70,61 @@ pub fn ora(cpu: &mut R6502, am: AmFn) -> Result<(), Box<dyn Error>> {
 
 #[cfg(test)]
 mod tests {
-    #[test]
-    fn ora_immediate() {}
+    use crate::test_utils::{test_parameterized_cpu_state, CpuState as CS};
 
     #[test]
-    fn ora_zero_page() {}
+    fn ora_immediate() {
+        let tests: &[(&[u8], CS, usize)] = &[];
+
+        test_parameterized_cpu_state(tests);
+    }
 
     #[test]
-    fn ora_zero_page_x() {}
+    fn ora_zero_page() {
+        let tests: &[(&[u8], CS, usize)] = &[];
+
+        test_parameterized_cpu_state(tests);
+    }
 
     #[test]
-    fn ora_absolute() {}
+    fn ora_zero_page_x() {
+        let tests: &[(&[u8], CS, usize)] = &[];
+
+        test_parameterized_cpu_state(tests);
+    }
 
     #[test]
-    fn ora_absolute_x() {}
+    fn ora_absolute() {
+        let tests: &[(&[u8], CS, usize)] = &[];
+
+        test_parameterized_cpu_state(tests);
+    }
 
     #[test]
-    fn ora_absolute_y() {}
+    fn ora_absolute_x() {
+        let tests: &[(&[u8], CS, usize)] = &[];
+
+        test_parameterized_cpu_state(tests);
+    }
 
     #[test]
-    fn ora_indexed_indirect() {}
+    fn ora_absolute_y() {
+        let tests: &[(&[u8], CS, usize)] = &[];
+
+        test_parameterized_cpu_state(tests);
+    }
 
     #[test]
-    fn ora_indirect_indexed() {}
+    fn ora_indexed_indirect() {
+        let tests: &[(&[u8], CS, usize)] = &[];
+
+        test_parameterized_cpu_state(tests);
+    }
+
+    #[test]
+    fn ora_indirect_indexed() {
+        let tests: &[(&[u8], CS, usize)] = &[];
+
+        test_parameterized_cpu_state(tests);
+    }
 }

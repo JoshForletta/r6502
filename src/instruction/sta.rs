@@ -63,24 +63,54 @@ pub fn sta(cpu: &mut R6502, am: AmFn) -> Result<(), Box<dyn Error>> {
 
 #[cfg(test)]
 mod tests {
-    #[test]
-    fn sta_zero_page() {}
+    use crate::test_utils::{test_parameterized_cpu_state, CpuState as CS};
 
     #[test]
-    fn sta_zero_page_x() {}
+    fn sta_zero_page() {
+        let tests: &[(&[u8], CS, usize)] = &[];
+
+        test_parameterized_cpu_state(tests);
+    }
 
     #[test]
-    fn sta_absolute() {}
+    fn sta_zero_page_x() {
+        let tests: &[(&[u8], CS, usize)] = &[];
+
+        test_parameterized_cpu_state(tests);
+    }
 
     #[test]
-    fn sta_absolute_x() {}
+    fn sta_absolute() {
+        let tests: &[(&[u8], CS, usize)] = &[];
+
+        test_parameterized_cpu_state(tests);
+    }
 
     #[test]
-    fn sta_absolute_y() {}
+    fn sta_absolute_x() {
+        let tests: &[(&[u8], CS, usize)] = &[];
+
+        test_parameterized_cpu_state(tests);
+    }
 
     #[test]
-    fn sta_indexed_indirect() {}
+    fn sta_absolute_y() {
+        let tests: &[(&[u8], CS, usize)] = &[];
+
+        test_parameterized_cpu_state(tests);
+    }
 
     #[test]
-    fn sta_indirect_indexed() {}
+    fn sta_indexed_indirect() {
+        let tests: &[(&[u8], CS, usize)] = &[];
+
+        test_parameterized_cpu_state(tests);
+    }
+
+    #[test]
+    fn sta_indirect_indexed() {
+        let tests: &[(&[u8], CS, usize)] = &[];
+
+        test_parameterized_cpu_state(tests);
+    }
 }

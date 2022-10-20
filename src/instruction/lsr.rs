@@ -49,18 +49,40 @@ pub fn lsr(cpu: &mut R6502, am: AmFn) -> Result<(), Box<dyn Error>> {
 
 #[cfg(test)]
 mod tests {
-    #[test]
-    fn lsr_accumulator() {}
+    use crate::test_utils::{test_parameterized_cpu_state, CpuState as CS};
 
     #[test]
-    fn lsr_zero_page() {}
+    fn lsr_accumulator() {
+        let tests: &[(&[u8], CS, usize)] = &[];
+
+        test_parameterized_cpu_state(tests);
+    }
 
     #[test]
-    fn lsr_zero_page_x() {}
+    fn lsr_zero_page() {
+        let tests: &[(&[u8], CS, usize)] = &[];
+
+        test_parameterized_cpu_state(tests);
+    }
 
     #[test]
-    fn lsr_absolute() {}
+    fn lsr_zero_page_x() {
+        let tests: &[(&[u8], CS, usize)] = &[];
+
+        test_parameterized_cpu_state(tests);
+    }
 
     #[test]
-    fn lsr_absolute_x() {}
+    fn lsr_absolute() {
+        let tests: &[(&[u8], CS, usize)] = &[];
+
+        test_parameterized_cpu_state(tests);
+    }
+
+    #[test]
+    fn lsr_absolute_x() {
+        let tests: &[(&[u8], CS, usize)] = &[];
+
+        test_parameterized_cpu_state(tests);
+    }
 }

@@ -21,6 +21,12 @@ pub fn tya(cpu: &mut R6502, am: AmFn) -> Result<(), Box<dyn Error>> {
 
 #[cfg(test)]
 mod tests {
+    use crate::test_utils::{test_parameterized_cpu_state, CpuState as CS};
+
     #[test]
-    fn tya_implied() {}
+    fn tya_implied() {
+        let tests: &[(&[u8], CS, usize)] = &[];
+
+        test_parameterized_cpu_state(tests);
+    }
 }
