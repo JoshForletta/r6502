@@ -49,40 +49,20 @@ pub fn ror(cpu: &mut R6502, am: AmFn) -> Result<(), Box<dyn Error>> {
 
 #[cfg(test)]
 mod tests {
-    use crate::test_utils::{test_parameterized_cpu_state, CpuState as CS};
-
-    #[test]
-    fn ror_accumulator() {
-        let tests: &[(&[u8], CS, usize)] = &[];
-
-        test_parameterized_cpu_state(tests);
-    }
-
-    #[test]
-    fn ror_zero_page() {
-        let tests: &[(&[u8], CS, usize)] = &[];
-
-        test_parameterized_cpu_state(tests);
-    }
-
-    #[test]
-    fn ror_zero_page_x() {
-        let tests: &[(&[u8], CS, usize)] = &[];
-
-        test_parameterized_cpu_state(tests);
-    }
-
-    #[test]
-    fn ror_absolute() {
-        let tests: &[(&[u8], CS, usize)] = &[];
-
-        test_parameterized_cpu_state(tests);
-    }
-
-    #[test]
-    fn ror_absolute_x() {
-        let tests: &[(&[u8], CS, usize)] = &[];
-
-        test_parameterized_cpu_state(tests);
-    }
+    // use crate::test_utils::{test_emulation_state, CpuState, EmulationStateTest};
+    //
+    // #[test]
+    // fn ror_accumulator() {}
+    //
+    // #[test]
+    // fn ror_zero_page() {}
+    //
+    // #[test]
+    // fn ror_zero_page_x() {}
+    //
+    // #[test]
+    // fn ror_absolute() {}
+    //
+    // #[test]
+    // fn ror_absolute_x() {}
 }

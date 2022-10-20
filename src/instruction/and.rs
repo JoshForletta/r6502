@@ -70,61 +70,29 @@ pub fn and(cpu: &mut R6502, am: AmFn) -> Result<(), Box<dyn Error>> {
 
 #[cfg(test)]
 mod tests {
-    use crate::test_utils::{test_parameterized_cpu_state, CpuState as CS};
-
-    #[test]
-    fn and_immediate() {
-        let tests: &[(&[u8], CS, usize)] = &[];
-
-        test_parameterized_cpu_state(tests);
-    }
-
-    #[test]
-    fn and_zero_page() {
-        let tests: &[(&[u8], CS, usize)] = &[];
-
-        test_parameterized_cpu_state(tests);
-    }
-
-    #[test]
-    fn and_zero_page_x() {
-        let tests: &[(&[u8], CS, usize)] = &[];
-
-        test_parameterized_cpu_state(tests);
-    }
-
-    #[test]
-    fn and_absolute() {
-        let tests: &[(&[u8], CS, usize)] = &[];
-
-        test_parameterized_cpu_state(tests);
-    }
-
-    #[test]
-    fn and_absolute_x() {
-        let tests: &[(&[u8], CS, usize)] = &[];
-
-        test_parameterized_cpu_state(tests);
-    }
-
-    #[test]
-    fn and_absolute_y() {
-        let tests: &[(&[u8], CS, usize)] = &[];
-
-        test_parameterized_cpu_state(tests);
-    }
-
-    #[test]
-    fn and_indexed_indirect() {
-        let tests: &[(&[u8], CS, usize)] = &[];
-
-        test_parameterized_cpu_state(tests);
-    }
-
-    #[test]
-    fn and_indirect_indexed() {
-        let tests: &[(&[u8], CS, usize)] = &[];
-
-        test_parameterized_cpu_state(tests);
-    }
+    // use crate::test_utils::{test_emulation_state, CpuState, EmulationStateTest};
+    //
+    // #[test]
+    // fn and_immediate() {}
+    //
+    // #[test]
+    // fn and_zero_page() {}
+    //
+    // #[test]
+    // fn and_zero_page_x() {}
+    //
+    // #[test]
+    // fn and_absolute() {}
+    //
+    // #[test]
+    // fn and_absolute_x() {}
+    //
+    // #[test]
+    // fn and_absolute_y() {}
+    //
+    // #[test]
+    // fn and_indexed_indirect() {}
+    //
+    // #[test]
+    // fn and_indirect_indexed() {}
 }

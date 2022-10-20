@@ -35,26 +35,14 @@ pub fn stx(cpu: &mut R6502, am: AmFn) -> Result<(), Box<dyn Error>> {
 
 #[cfg(test)]
 mod tests {
-    use crate::test_utils::{test_parameterized_cpu_state, CpuState as CS};
-
-    #[test]
-    fn stx_zero_page() {
-        let tests: &[(&[u8], CS, usize)] = &[];
-
-        test_parameterized_cpu_state(tests);
-    }
-
-    #[test]
-    fn stx_zero_page_y() {
-        let tests: &[(&[u8], CS, usize)] = &[];
-
-        test_parameterized_cpu_state(tests);
-    }
-
-    #[test]
-    fn stx_absolute() {
-        let tests: &[(&[u8], CS, usize)] = &[];
-
-        test_parameterized_cpu_state(tests);
-    }
+    // use crate::test_utils::{test_emulation_state, CpuState, EmulationStateTest};
+    //
+    // #[test]
+    // fn stx_zero_page() {}
+    //
+    // #[test]
+    // fn stx_zero_page_y() {}
+    //
+    // #[test]
+    // fn stx_absolute() {}
 }

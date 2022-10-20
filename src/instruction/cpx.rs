@@ -35,26 +35,14 @@ pub fn cpx(cpu: &mut R6502, am: AmFn) -> Result<(), Box<dyn Error>> {
 
 #[cfg(test)]
 mod tests {
-    use crate::test_utils::{test_parameterized_cpu_state, CpuState as CS};
-
-    #[test]
-    fn cpx_immediate() {
-        let tests: &[(&[u8], CS, usize)] = &[];
-
-        test_parameterized_cpu_state(tests);
-    }
-
-    #[test]
-    fn cpx_zero_page() {
-        let tests: &[(&[u8], CS, usize)] = &[];
-
-        test_parameterized_cpu_state(tests);
-    }
-
-    #[test]
-    fn cpx_absolute() {
-        let tests: &[(&[u8], CS, usize)] = &[];
-
-        test_parameterized_cpu_state(tests);
-    }
+    // use crate::test_utils::{test_emulation_state, CpuState, EmulationStateTest};
+    //
+    // #[test]
+    // fn cpx_immediate() {}
+    //
+    // #[test]
+    // fn cpx_zero_page() {}
+    //
+    // #[test]
+    // fn cpx_absolute() {}
 }

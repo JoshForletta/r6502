@@ -21,12 +21,8 @@ pub fn bcs(cpu: &mut R6502, am: AmFn) -> Result<(), Box<dyn Error>> {
 
 #[cfg(test)]
 mod tests {
-    use crate::test_utils::{test_parameterized_cpu_state, CpuState as CS};
-
-    #[test]
-    fn bcs_relative() {
-        let tests: &[(&[u8], CS, usize)] = &[];
-
-        test_parameterized_cpu_state(tests);
-    }
+    // use crate::test_utils::{test_emulation_state, CpuState, EmulationStateTest};
+    //
+    // #[test]
+    // fn bcs_relative() {}
 }

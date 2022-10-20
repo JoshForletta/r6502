@@ -49,40 +49,20 @@ pub fn lsr(cpu: &mut R6502, am: AmFn) -> Result<(), Box<dyn Error>> {
 
 #[cfg(test)]
 mod tests {
-    use crate::test_utils::{test_parameterized_cpu_state, CpuState as CS};
-
-    #[test]
-    fn lsr_accumulator() {
-        let tests: &[(&[u8], CS, usize)] = &[];
-
-        test_parameterized_cpu_state(tests);
-    }
-
-    #[test]
-    fn lsr_zero_page() {
-        let tests: &[(&[u8], CS, usize)] = &[];
-
-        test_parameterized_cpu_state(tests);
-    }
-
-    #[test]
-    fn lsr_zero_page_x() {
-        let tests: &[(&[u8], CS, usize)] = &[];
-
-        test_parameterized_cpu_state(tests);
-    }
-
-    #[test]
-    fn lsr_absolute() {
-        let tests: &[(&[u8], CS, usize)] = &[];
-
-        test_parameterized_cpu_state(tests);
-    }
-
-    #[test]
-    fn lsr_absolute_x() {
-        let tests: &[(&[u8], CS, usize)] = &[];
-
-        test_parameterized_cpu_state(tests);
-    }
+    // use crate::test_utils::{test_emulation_state, CpuState, EmulationStateTest};
+    //
+    // #[test]
+    // fn lsr_accumulator() {}
+    //
+    // #[test]
+    // fn lsr_zero_page() {}
+    //
+    // #[test]
+    // fn lsr_zero_page_x() {}
+    //
+    // #[test]
+    // fn lsr_absolute() {}
+    //
+    // #[test]
+    // fn lsr_absolute_x() {}
 }

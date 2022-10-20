@@ -122,7 +122,12 @@ pub fn indexed_indirect(cpu: &mut R6502) -> Result<&mut u8, Box<dyn Error>> {
 
     addr = (Wrapping(addr) + Wrapping(cpu.x)).0;
 
-    cpu.bus.read_mut(addr.into()).or_else(|e| Err(e.into()))
+    let addr = match cpu.bus.read_word(addr as u16) {
+        Ok(addr) => addr,
+        Err(e) => return Err(e.into()),
+    };
+
+    cpu.bus.read_mut(addr).or_else(|e| Err(e.into()))
 }
 
 pub const INDIRECT_INDEXED: AddressingMode = AddressingMode {
@@ -131,12 +136,12 @@ pub const INDIRECT_INDEXED: AddressingMode = AddressingMode {
 };
 
 pub fn indirect_indexed(cpu: &mut R6502) -> Result<&mut u8, Box<dyn Error>> {
-    let zpg_addr = match cpu.read() {
+    let addr = match cpu.read() {
         Ok(addr) => addr,
         Err(e) => return Err(e.into()),
     };
 
-    let mut addr = match cpu.bus.read_word(zpg_addr.into()) {
+    let mut addr = match cpu.bus.read_word(addr as u16) {
         Ok(addr) => addr,
         Err(e) => return Err(e.into()),
     };

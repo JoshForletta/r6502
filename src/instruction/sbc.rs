@@ -70,61 +70,29 @@ pub fn sbc(cpu: &mut R6502, am: AmFn) -> Result<(), Box<dyn Error>> {
 
 #[cfg(test)]
 mod tests {
-    use crate::test_utils::{test_parameterized_cpu_state, CpuState as CS};
-
-    #[test]
-    fn sbc_immediate() {
-        let tests: &[(&[u8], CS, usize)] = &[];
-
-        test_parameterized_cpu_state(tests);
-    }
-
-    #[test]
-    fn sbc_zero_page() {
-        let tests: &[(&[u8], CS, usize)] = &[];
-
-        test_parameterized_cpu_state(tests);
-    }
-
-    #[test]
-    fn sbc_zero_page_x() {
-        let tests: &[(&[u8], CS, usize)] = &[];
-
-        test_parameterized_cpu_state(tests);
-    }
-
-    #[test]
-    fn sbc_absolute() {
-        let tests: &[(&[u8], CS, usize)] = &[];
-
-        test_parameterized_cpu_state(tests);
-    }
-
-    #[test]
-    fn sbc_absolute_x() {
-        let tests: &[(&[u8], CS, usize)] = &[];
-
-        test_parameterized_cpu_state(tests);
-    }
-
-    #[test]
-    fn sbc_absolute_y() {
-        let tests: &[(&[u8], CS, usize)] = &[];
-
-        test_parameterized_cpu_state(tests);
-    }
-
-    #[test]
-    fn sbc_indexed_indirect() {
-        let tests: &[(&[u8], CS, usize)] = &[];
-
-        test_parameterized_cpu_state(tests);
-    }
-
-    #[test]
-    fn sbc_indirect_indexed() {
-        let tests: &[(&[u8], CS, usize)] = &[];
-
-        test_parameterized_cpu_state(tests);
-    }
+    // use crate::test_utils::{test_emulation_state, CpuState, EmulationStateTest};
+    //
+    // #[test]
+    // fn sbc_immediate() {}
+    //
+    // #[test]
+    // fn sbc_zero_page() {}
+    //
+    // #[test]
+    // fn sbc_zero_page_x() {}
+    //
+    // #[test]
+    // fn sbc_absolute() {}
+    //
+    // #[test]
+    // fn sbc_absolute_x() {}
+    //
+    // #[test]
+    // fn sbc_absolute_y() {}
+    //
+    // #[test]
+    // fn sbc_indexed_indirect() {}
+    //
+    // #[test]
+    // fn sbc_indirect_indexed() {}
 }

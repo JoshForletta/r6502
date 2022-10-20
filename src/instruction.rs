@@ -28,6 +28,7 @@ impl Debug for Instruction {
 
 impl Instruction {
     pub fn exec(&self, cpu: &mut R6502) -> Result<(), InstructionError> {
+        cpu.extra_cycles += 1;
         match (self.call)(cpu, self.am.call) {
             Ok(_) => Ok(()),
             Err(e) => Err(InstructionError {

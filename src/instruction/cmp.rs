@@ -70,61 +70,29 @@ pub fn cmp(cpu: &mut R6502, am: AmFn) -> Result<(), Box<dyn Error>> {
 
 #[cfg(test)]
 mod tests {
-    use crate::test_utils::{test_parameterized_cpu_state, CpuState as CS};
-
-    #[test]
-    fn cmp_immediate() {
-        let tests: &[(&[u8], CS, usize)] = &[];
-
-        test_parameterized_cpu_state(tests);
-    }
-
-    #[test]
-    fn cmp_zero_page() {
-        let tests: &[(&[u8], CS, usize)] = &[];
-
-        test_parameterized_cpu_state(tests);
-    }
-
-    #[test]
-    fn cmp_zero_page_x() {
-        let tests: &[(&[u8], CS, usize)] = &[];
-
-        test_parameterized_cpu_state(tests);
-    }
-
-    #[test]
-    fn cmp_absolute() {
-        let tests: &[(&[u8], CS, usize)] = &[];
-
-        test_parameterized_cpu_state(tests);
-    }
-
-    #[test]
-    fn cmp_absolute_x() {
-        let tests: &[(&[u8], CS, usize)] = &[];
-
-        test_parameterized_cpu_state(tests);
-    }
-
-    #[test]
-    fn cmp_absolute_y() {
-        let tests: &[(&[u8], CS, usize)] = &[];
-
-        test_parameterized_cpu_state(tests);
-    }
-
-    #[test]
-    fn cmp_indexed_indirect() {
-        let tests: &[(&[u8], CS, usize)] = &[];
-
-        test_parameterized_cpu_state(tests);
-    }
-
-    #[test]
-    fn cmp_indirect_indexed() {
-        let tests: &[(&[u8], CS, usize)] = &[];
-
-        test_parameterized_cpu_state(tests);
-    }
+    // use crate::test_utils::{test_emulation_state, CpuState, EmulationStateTest};
+    //
+    // #[test]
+    // fn cmp_immediate() {}
+    //
+    // #[test]
+    // fn cmp_zero_page() {}
+    //
+    // #[test]
+    // fn cmp_zero_page_x() {}
+    //
+    // #[test]
+    // fn cmp_absolute() {}
+    //
+    // #[test]
+    // fn cmp_absolute_x() {}
+    //
+    // #[test]
+    // fn cmp_absolute_y() {}
+    //
+    // #[test]
+    // fn cmp_indexed_indirect() {}
+    //
+    // #[test]
+    // fn cmp_indirect_indexed() {}
 }
