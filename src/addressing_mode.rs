@@ -49,7 +49,7 @@ pub fn absolute_x(cpu: &mut R6502) -> Result<&mut u8, Box<dyn Error>> {
 
     let page = addr & 0xff00;
 
-    addr += Into::<u16>::into(cpu.x);
+    addr += cpu.x as u16;
 
     cpu.ps.set(PS::P, page == (addr & 0xff00));
 
@@ -72,7 +72,7 @@ pub fn absolute_y(cpu: &mut R6502) -> Result<&mut u8, Box<dyn Error>> {
 
     let page = addr & 0xff00;
 
-    addr += Into::<u16>::into(cpu.y);
+    addr += cpu.y as u16;
 
     cpu.ps.set(PS::P, page == (addr & 0xff00));
 
