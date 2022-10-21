@@ -124,9 +124,7 @@ pub fn test_emulation_state(est: &EmulationStateTest) {
 
     for (addr, data) in est.mem_tests {
         passed = compare(
-            format_args!("Address: ${:X}, Data: ${:X}", addr, data)
-                .as_str()
-                .unwrap(),
+            format!("Address: ${:X}, Data: ${:X}", addr, data).as_str(),
             cpu.bus.read(*addr).unwrap(),
             *data,
         );
