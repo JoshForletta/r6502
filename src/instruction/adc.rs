@@ -95,7 +95,7 @@ mod tests {
     };
 
     #[test]
-    fn carry_flag() {
+    fn adc_carry_flag() {
         let est = EmulationStateTest {
             instructions: &[0x69, 0x02],
             initial_cpu_state: CpuState {
@@ -115,7 +115,7 @@ mod tests {
     }
 
     #[test]
-    fn zero_flag() {
+    fn adc_zero_flag() {
         let est = EmulationStateTest {
             instructions: &[0x69, 0x01],
             initial_cpu_state: CpuState {
@@ -134,7 +134,7 @@ mod tests {
     }
 
     #[test]
-    fn overflow_flag() {
+    fn adc_overflow_flag() {
         let est = EmulationStateTest {
             instructions: &[0x69, 0x01],
             initial_cpu_state: CpuState {
@@ -153,7 +153,7 @@ mod tests {
     }
 
     #[test]
-    fn negative_flag() {
+    fn adc_negative_flag() {
         let est = EmulationStateTest {
             instructions: &[0x69, 0x80],
             initial_cpu_state: CpuState {
