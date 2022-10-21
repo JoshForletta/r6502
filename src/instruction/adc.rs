@@ -80,6 +80,10 @@ pub fn adc(cpu: &mut R6502, am: AmFn) -> Result<(), Box<dyn Error>> {
 
     cpu.a = sum;
 
+    if cpu.ps.contains(PS::P) {
+        cpu.extra_cycles += 1;
+    }
+
     Ok(())
 }
 
