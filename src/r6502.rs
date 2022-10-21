@@ -9,6 +9,8 @@ use crate::{
     instruction::INSTRUCTION_SET,
 };
 
+const STACK: u16 = 0x0100;
+
 // Processor Status Flags
 bitflags! {
     #[derive(Default)]
@@ -93,6 +95,35 @@ impl R6502 {
         Ok(r)
     }
 
+    pub fn push(&mut self, data: u8) -> Result<(), BusError> {
+        self.bus.write(STACK + self.sp as u16, data)?;
+        self.sp += 1;
+
+        Ok(())
+    }
+
+    pub fn pull(&mut self) -> Result<u8, Box<dyn Error>> {
+        self.sp -= 1;
+        let data = self.bus.read(STACK + self.sp as u16)?;
+
+        Ok(data)
+    }
+
+    pub fn push_word(&mut self, data: u16) -> Result<(), Box<dyn Error>> {
+        self.push(data as u8)?;
+        self.push((data >> 8) as u8)?;
+
+        Ok(())
+    }
+
+    pub fn pull_word(&mut self) -> Result<u16, Box<dyn Error>> {
+        let mut data: u16 = self.pull()? as u16;
+        data = data << 8;
+        data = data | (self.pull()? as u16);
+
+        Ok(data)
+    }
+
     pub fn clock(&mut self) -> Result<(), Box<dyn Error>> {
         self.ps.set(PS::P, false);
 
@@ -107,5 +138,74 @@ impl R6502 {
         }
 
         Ok(())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::{
+        device::{Device, Ram},
+        R6502,
+    };
+
+    #[test]
+    fn push() {
+        let mut cpu: R6502 = Default::default();
+        let mem = Ram::with_address_range(0x0000, 0xFFFF);
+
+        cpu.mount_device(Box::new(mem));
+
+        cpu.push(0x69).unwrap();
+
+        assert_eq!(cpu.sp, 0x01);
+        assert_eq!(cpu.bus.read(0x0100).unwrap(), 0x69);
+    }
+
+    #[test]
+    fn pull() {
+        let mut cpu: R6502 = Default::default();
+        let mut mem = Ram::with_address_range(0x0000, 0xFFFF);
+
+        mem.set(0x0100, 0x69).unwrap();
+
+        cpu.mount_device(Box::new(mem));
+
+        cpu.sp = 0x01;
+
+        let data = cpu.pull().unwrap();
+
+        assert_eq!(data, 0x69);
+        assert_eq!(cpu.sp, 0x00);
+    }
+
+    #[test]
+    fn push_word() {
+        let mut cpu: R6502 = Default::default();
+        let mem = Ram::with_address_range(0x0000, 0xFFFF);
+
+        cpu.mount_device(Box::new(mem));
+
+        cpu.push_word(0xFF69).unwrap();
+
+        assert_eq!(cpu.sp, 0x02);
+        assert_eq!(cpu.bus.read_word(0x0100).unwrap(), 0xFF69);
+    }
+
+    #[test]
+    fn pull_word() {
+        let mut cpu: R6502 = Default::default();
+        let mut mem = Ram::with_address_range(0x0000, 0xFFFF);
+
+        mem.set(0x0100, 0x69).unwrap();
+        mem.set(0x0101, 0xFF).unwrap();
+
+        cpu.mount_device(Box::new(mem));
+
+        cpu.sp = 0x02;
+
+        let data = cpu.pull_word().unwrap();
+
+        assert_eq!(data, 0xFF69);
+        assert_eq!(cpu.sp, 0x00);
     }
 }
