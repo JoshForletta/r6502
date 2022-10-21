@@ -3,6 +3,7 @@ use std::error::Error;
 use crate::{
     addressing_mode::{self, AddressingMode},
     instruction::Instruction,
+    r6502::PS,
     R6502,
 };
 
@@ -63,7 +64,16 @@ pub const AND_INDIRECT_INDEXED: Instruction = Instruction {
 };
 
 pub fn and(cpu: &mut R6502, am: AddressingMode) -> Result<(), Box<dyn Error>> {
-    let _target = (am.call)(cpu)?;
+    let data = *(am.call)(cpu)?;
+
+    cpu.a = cpu.a & data;
+
+    cpu.ps.set(PS::Z, cpu.a == 0);
+    cpu.ps.set(PS::N, (cpu.a & 0x80) != 0);
+
+    if cpu.ps.contains(PS::P) {
+        cpu.extra_cycles += 1;
+    }
 
     Ok(())
 }
@@ -111,27 +121,152 @@ mod tests {
         test_emulation_state(&est);
     }
 
-    // #[test]
-    // fn and_immediate() {}
-    //
-    // #[test]
-    // fn and_zero_page() {}
-    //
-    // #[test]
-    // fn and_zero_page_x() {}
-    //
-    // #[test]
-    // fn and_absolute() {}
-    //
-    // #[test]
-    // fn and_absolute_x() {}
-    //
-    // #[test]
-    // fn and_absolute_y() {}
-    //
-    // #[test]
-    // fn and_indexed_indirect() {}
-    //
-    // #[test]
-    // fn and_indirect_indexed() {}
+    #[test]
+    fn and_immediate() {
+        let est = EmulationStateTest {
+            instructions: &[0x29, 0xF0],
+            initial_cpu_state: CpuState {
+                a: Some(0xFF),
+                ..Default::default()
+            },
+            test_cpu_state: CpuState {
+                a: Some(0xF0),
+                ..Default::default()
+            },
+            ..Default::default()
+        };
+
+        test_emulation_state(&est);
+    }
+
+    #[test]
+    fn and_zero_page() {
+        let est = EmulationStateTest {
+            instructions: &[0x25, 0x02, 0xF0],
+            initial_cpu_state: CpuState {
+                a: Some(0xFF),
+                ..Default::default()
+            },
+            test_cpu_state: CpuState {
+                a: Some(0xF0),
+                ..Default::default()
+            },
+            ..Default::default()
+        };
+
+        test_emulation_state(&est);
+    }
+
+    #[test]
+    fn and_zero_page_x() {
+        let est = EmulationStateTest {
+            instructions: &[0x35, 0x01, 0xF0],
+            initial_cpu_state: CpuState {
+                a: Some(0xFF),
+                x: Some(0x01),
+                ..Default::default()
+            },
+            test_cpu_state: CpuState {
+                a: Some(0xF0),
+                ..Default::default()
+            },
+            ..Default::default()
+        };
+
+        test_emulation_state(&est);
+    }
+
+    #[test]
+    fn and_absolute() {
+        let est = EmulationStateTest {
+            instructions: &[0x2D, 0x03, 0x00, 0xF0],
+            initial_cpu_state: CpuState {
+                a: Some(0xFF),
+                ..Default::default()
+            },
+            test_cpu_state: CpuState {
+                a: Some(0xF0),
+                ..Default::default()
+            },
+            ..Default::default()
+        };
+
+        test_emulation_state(&est);
+    }
+
+    #[test]
+    fn and_absolute_x() {
+        let est = EmulationStateTest {
+            instructions: &[0x3D, 0x02, 0x00, 0xF0],
+            initial_cpu_state: CpuState {
+                a: Some(0xFF),
+                x: Some(0x01),
+                ..Default::default()
+            },
+            test_cpu_state: CpuState {
+                a: Some(0xF0),
+                ..Default::default()
+            },
+            ..Default::default()
+        };
+
+        test_emulation_state(&est);
+    }
+
+    #[test]
+    fn and_absolute_y() {
+        let est = EmulationStateTest {
+            instructions: &[0x39, 0x02, 0x00, 0xF0],
+            initial_cpu_state: CpuState {
+                a: Some(0xFF),
+                y: Some(0x01),
+                ..Default::default()
+            },
+            test_cpu_state: CpuState {
+                a: Some(0xF0),
+                ..Default::default()
+            },
+            ..Default::default()
+        };
+
+        test_emulation_state(&est);
+    }
+
+    #[test]
+    fn and_indexed_indirect() {
+        let est = EmulationStateTest {
+            instructions: &[0x21, 0x01, 0x04, 0x00, 0xF0],
+            initial_cpu_state: CpuState {
+                a: Some(0xFF),
+                x: Some(0x01),
+                ..Default::default()
+            },
+            test_cpu_state: CpuState {
+                a: Some(0xF0),
+                ..Default::default()
+            },
+            ..Default::default()
+        };
+
+        test_emulation_state(&est);
+    }
+
+    #[test]
+    fn and_indirect_indexed() {
+        let est = EmulationStateTest {
+            instructions: &[0x31, 0x02, 0x03, 0x00, 0xF0],
+            initial_cpu_state: CpuState {
+                a: Some(0xFF),
+                y: Some(0x01),
+                ..Default::default()
+            },
+            test_cpu_state: CpuState {
+                a: Some(0xF0),
+                ..Default::default()
+            },
+            ..Default::default()
+        };
+
+        test_emulation_state(&est);
+    }
 }
