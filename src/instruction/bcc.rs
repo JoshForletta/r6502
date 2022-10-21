@@ -26,7 +26,28 @@ pub fn bcc(cpu: &mut R6502, am: AddressingMode) -> Result<(), Box<dyn Error>> {
 
 #[cfg(test)]
 mod tests {
-    use crate::test_utils::{test_emulation_state, CpuState, EmulationStateTest};
+    use crate::{
+        r6502::PS,
+        test_utils::{test_emulation_state, CpuState, EmulationStateTest},
+    };
+
+    #[test]
+    fn bcc_carry_set() {
+        let est = EmulationStateTest {
+            instructions: &[0x90, 0xFF],
+            initial_cpu_state: CpuState {
+                ps: Some(PS::C),
+                ..Default::default()
+            },
+            test_cpu_state: CpuState {
+                pc: Some(0x02),
+                ..Default::default()
+            },
+            ..Default::default()
+        };
+
+        test_emulation_state(&est);
+    }
 
     #[test]
     fn bcc_positive_offset() {
