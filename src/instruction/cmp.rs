@@ -1,7 +1,7 @@
 use std::error::Error;
 
 use crate::{
-    addressing_mode::{self, AmFn},
+    addressing_mode::{self, AddressingMode},
     instruction::Instruction,
     R6502,
 };
@@ -62,8 +62,8 @@ pub const CMP_INDIRECT_INDEXED: Instruction = Instruction {
     call: cmp,
 };
 
-pub fn cmp(cpu: &mut R6502, am: AmFn) -> Result<(), Box<dyn Error>> {
-    let _target = am(cpu)?;
+pub fn cmp(cpu: &mut R6502, am: AddressingMode) -> Result<(), Box<dyn Error>> {
+    let _target = (am.call)(cpu)?;
 
     Ok(())
 }

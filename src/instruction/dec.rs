@@ -1,7 +1,7 @@
 use std::error::Error;
 
 use crate::{
-    addressing_mode::{self, AmFn},
+    addressing_mode::{self, AddressingMode},
     instruction::Instruction,
     R6502,
 };
@@ -34,8 +34,8 @@ pub const DEC_ABSOLUTE_X: Instruction = Instruction {
     call: dec,
 };
 
-pub fn dec(cpu: &mut R6502, am: AmFn) -> Result<(), Box<dyn Error>> {
-    let _target = am(cpu)?;
+pub fn dec(cpu: &mut R6502, am: AddressingMode) -> Result<(), Box<dyn Error>> {
+    let _target = (am.call)(cpu)?;
 
     Ok(())
 }

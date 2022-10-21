@@ -1,7 +1,7 @@
 use std::error::Error;
 
 use crate::{
-    addressing_mode::{self, AmFn},
+    addressing_mode::{self, AddressingMode},
     instruction::Instruction,
     r6502::PS,
     R6502,
@@ -63,8 +63,8 @@ pub const ADC_INDIRECT_INDEXED: Instruction = Instruction {
     call: adc,
 };
 
-pub fn adc(cpu: &mut R6502, am: AmFn) -> Result<(), Box<dyn Error>> {
-    let d = *am(cpu)? as u16;
+pub fn adc(cpu: &mut R6502, am: AddressingMode) -> Result<(), Box<dyn Error>> {
+    let d = *(am.call)(cpu)? as u16;
     let c = cpu.ps.contains(PS::C) as u16;
     let a = cpu.a as u16;
 

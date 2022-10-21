@@ -4,7 +4,7 @@ use std::{
 };
 
 use crate::{
-    addressing_mode::{AddressingMode, AmFn, IMPLIED},
+    addressing_mode::{AddressingMode, IMPLIED},
     error::InstructionError,
     R6502,
 };
@@ -14,7 +14,7 @@ pub struct Instruction {
     pub opcode: u8,
     pub mnemonic: &'static str,
     pub am: AddressingMode,
-    call: fn(&mut R6502, AmFn) -> Result<(), Box<dyn Error>>,
+    call: fn(&mut R6502, AddressingMode) -> Result<(), Box<dyn Error>>,
 }
 
 impl Debug for Instruction {
@@ -29,7 +29,7 @@ impl Debug for Instruction {
 impl Instruction {
     pub fn exec(&self, cpu: &mut R6502) -> Result<(), InstructionError> {
         cpu.extra_cycles += 1;
-        match (self.call)(cpu, self.am.call) {
+        match (self.call)(cpu, self.am) {
             Ok(_) => Ok(()),
             Err(e) => Err(InstructionError {
                 instruction: self.clone(),
@@ -50,7 +50,7 @@ impl Display for IllegalInstruction {
 
 impl Error for IllegalInstruction {}
 
-fn illegal(_cpu: &mut R6502, _am: AmFn) -> Result<(), Box<dyn Error>> {
+fn illegal(_cpu: &mut R6502, _am: AddressingMode) -> Result<(), Box<dyn Error>> {
     Err(IllegalInstruction {}.into())
 }
 
