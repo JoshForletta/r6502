@@ -10,11 +10,11 @@ where
     Self: Debug,
     E: Error,
 {
-    fn address_range(&self) -> &Range<u16>;
+    fn address_range(&self) -> &Range<u64>;
 
     #[inline]
     fn contains(&self, a: u16) -> bool {
-        self.address_range().contains(&a)
+        self.address_range().contains(&(a as u64))
     }
 
     fn get(&self, addr: u16) -> Result<&u8, E>;
