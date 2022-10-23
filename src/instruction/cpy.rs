@@ -3,6 +3,7 @@ use std::error::Error;
 use crate::{
     addressing_mode::{self, AddressingMode},
     instruction::Instruction,
+    r6502::PS,
     R6502,
 };
 
@@ -28,21 +29,36 @@ pub const CPY_ABSOLUTE: Instruction = Instruction {
 };
 
 pub fn cpy(cpu: &mut R6502, am: AddressingMode) -> Result<(), Box<dyn Error>> {
-    let _target = (am.call)(cpu)?;
+    let data = *(am.call)(cpu)?;
+
+    cpu.ps.set(PS::C, cpu.y >= data);
+    cpu.ps.set(PS::Z, cpu.y == data);
 
     Ok(())
 }
 
 #[cfg(test)]
 mod tests {
-    // use crate::test_utils::{test_emulation_state, CpuState, EmulationStateTest};
-    //
-    // #[test]
-    // fn cpy_immediate() {}
-    //
-    // #[test]
-    // fn cpy_zero_page() {}
-    //
-    // #[test]
-    // fn cpy_absolute() {}
+    use crate::{
+        r6502::PS,
+        test_utils::{test_emulation_state, CpuState, EmulationStateTest},
+    };
+
+    #[test]
+    fn cpy() {
+        let est = EmulationStateTest {
+            instructions: &[0xC0, 0x69],
+            initial_cpu_state: CpuState {
+                y: Some(0x69),
+                ..Default::default()
+            },
+            test_cpu_state: CpuState {
+                ps: Some(PS::C | PS::Z),
+                ..Default::default()
+            },
+            ..Default::default()
+        };
+
+        test_emulation_state(&est);
+    }
 }
