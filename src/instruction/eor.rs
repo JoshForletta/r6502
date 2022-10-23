@@ -3,6 +3,7 @@ use std::error::Error;
 use crate::{
     addressing_mode::{self, AddressingMode},
     instruction::Instruction,
+    r6502::PS,
     R6502,
 };
 
@@ -63,36 +64,74 @@ pub const EOR_INDIRECT_INDEXED: Instruction = Instruction {
 };
 
 pub fn eor(cpu: &mut R6502, am: AddressingMode) -> Result<(), Box<dyn Error>> {
-    let _target = (am.call)(cpu)?;
+    let data = *(am.call)(cpu)?;
+
+    cpu.a = cpu.a ^ data;
+
+    cpu.ps.set(PS::Z, cpu.a == 0);
+    cpu.ps.set(PS::N, (cpu.a & 0x80) != 0);
 
     Ok(())
 }
 
 #[cfg(test)]
 mod tests {
-    // use crate::test_utils::{test_emulation_state, CpuState, EmulationStateTest};
-    //
-    // #[test]
-    // fn eor_immediate() {}
-    //
-    // #[test]
-    // fn eor_zero_page() {}
-    //
-    // #[test]
-    // fn eor_zero_page_x() {}
-    //
-    // #[test]
-    // fn eor_absolute() {}
-    //
-    // #[test]
-    // fn eor_absolute_x() {}
-    //
-    // #[test]
-    // fn eor_absolute_y() {}
-    //
-    // #[test]
-    // fn eor_indexed_indirect() {}
-    //
-    // #[test]
-    // fn eor_indirect_indexed() {}
+    use crate::{
+        r6502::PS,
+        test_utils::{test_emulation_state, CpuState, EmulationStateTest},
+    };
+
+    #[test]
+    fn eor_zero_flag() {
+        let est = EmulationStateTest {
+            instructions: &[0x49, 0xF0],
+            initial_cpu_state: CpuState {
+                a: Some(0xF0),
+                ..Default::default()
+            },
+            test_cpu_state: CpuState {
+                ps: Some(PS::Z),
+                ..Default::default()
+            },
+            ..Default::default()
+        };
+
+        test_emulation_state(&est);
+    }
+
+    #[test]
+    fn eor_negative_flag() {
+        let est = EmulationStateTest {
+            instructions: &[0x49, 0x80],
+            initial_cpu_state: CpuState {
+                a: Some(0x0F),
+                ..Default::default()
+            },
+            test_cpu_state: CpuState {
+                ps: Some(PS::N),
+                ..Default::default()
+            },
+            ..Default::default()
+        };
+
+        test_emulation_state(&est);
+    }
+
+    #[test]
+    fn eor() {
+        let est = EmulationStateTest {
+            instructions: &[0x49, 0x80],
+            initial_cpu_state: CpuState {
+                a: Some(0x0F),
+                ..Default::default()
+            },
+            test_cpu_state: CpuState {
+                a: Some(0x8F),
+                ..Default::default()
+            },
+            ..Default::default()
+        };
+
+        test_emulation_state(&est);
+    }
 }
