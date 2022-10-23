@@ -102,31 +102,31 @@ pub fn test_emulation_state(est: &EmulationStateTest) {
     }
 
     if let Some(a) = est.test_cpu_state.a {
-        (!compare("Accumulator", cpu.a, a)).then(|| failed = false);
+        (!compare("Accumulator", cpu.a, a)).then(|| failed = true);
     }
 
     if let Some(x) = est.test_cpu_state.x {
-        (!compare("X register", cpu.x, x)).then(|| failed = false);
+        (!compare("X register", cpu.x, x)).then(|| failed = true);
     }
 
     if let Some(y) = est.test_cpu_state.y {
-        (!compare("Y register", cpu.y, y)).then(|| failed = false);
+        (!compare("Y register", cpu.y, y)).then(|| failed = true);
     }
 
     if let Some(pc) = est.test_cpu_state.pc {
-        (!compare("Program counter", cpu.pc, pc)).then(|| failed = false);
+        (!compare("Program counter", cpu.pc, pc)).then(|| failed = true);
     }
 
     if let Some(sp) = est.test_cpu_state.sp {
-        (!compare("Stack pointer", cpu.sp, sp)).then(|| failed = false);
+        (!compare("Stack pointer", cpu.sp, sp)).then(|| failed = true);
     }
 
     if let Some(extra_cycles) = est.test_cpu_state.extra_cycles {
-        (!compare("Extra cycles", cpu.extra_cycles, extra_cycles)).then(|| failed = false);
+        (!compare("Extra cycles", cpu.extra_cycles, extra_cycles)).then(|| failed = true);
     }
 
     if let Some(null_pointer) = est.test_cpu_state.null_pointer {
-        (!compare("null_pointer", cpu.null_pointer, null_pointer)).then(|| failed = false);
+        (!compare("null_pointer", cpu.null_pointer, null_pointer)).then(|| failed = true);
     }
 
     for (addr, data) in est.mem_tests {
@@ -135,7 +135,7 @@ pub fn test_emulation_state(est: &EmulationStateTest) {
             cpu.bus.read(*addr).unwrap(),
             *data,
         ))
-        .then(|| failed = false);
+        .then(|| failed = true);
     }
 
     if failed {
