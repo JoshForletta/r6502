@@ -80,7 +80,7 @@ mod tests {
     };
 
     #[test]
-    fn cmp_immediate() {
+    fn cmp() {
         let est = EmulationStateTest {
             instructions: &[0xC9, 0x69],
             initial_cpu_state: CpuState {
@@ -96,25 +96,4 @@ mod tests {
 
         test_emulation_state(&est);
     }
-
-    // #[test]
-    // fn cmp_zero_page() {}
-    //
-    // #[test]
-    // fn cmp_zero_page_x() {}
-    //
-    // #[test]
-    // fn cmp_absolute() {}
-    //
-    // #[test]
-    // fn cmp_absolute_x() {}
-    //
-    // #[test]
-    // fn cmp_absolute_y() {}
-    //
-    // #[test]
-    // fn cmp_indexed_indirect() {}
-    //
-    // #[test]
-    // fn cmp_indirect_indexed() {}
 }

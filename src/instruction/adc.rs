@@ -173,7 +173,7 @@ mod tests {
     }
 
     #[test]
-    fn adc_immediate() {
+    fn adc() {
         let est = EmulationStateTest {
             instructions: &[0x69, 0x01],
             initial_cpu_state: CpuState {
@@ -182,137 +182,6 @@ mod tests {
             },
             test_cpu_state: CpuState {
                 a: Some(0x02),
-                ..Default::default()
-            },
-            ..Default::default()
-        };
-
-        test_emulation_state(&est);
-    }
-
-    #[test]
-    fn adc_zero_page() {
-        let est = EmulationStateTest {
-            instructions: &[0x65, 0x02, 0x05],
-            initial_cpu_state: CpuState {
-                a: Some(0x01),
-                ..Default::default()
-            },
-            test_cpu_state: CpuState {
-                a: Some(0x06),
-                ..Default::default()
-            },
-            ..Default::default()
-        };
-
-        test_emulation_state(&est);
-    }
-
-    #[test]
-    fn adc_zero_page_x() {
-        let est = EmulationStateTest {
-            instructions: &[0x75, 0x02, 0x00, 0x00, 0x05],
-            initial_cpu_state: CpuState {
-                a: Some(0x01),
-                x: Some(0x02),
-                ..Default::default()
-            },
-            test_cpu_state: CpuState {
-                a: Some(0x06),
-                ..Default::default()
-            },
-            ..Default::default()
-        };
-
-        test_emulation_state(&est);
-    }
-
-    #[test]
-    fn adc_absolute() {
-        let est = EmulationStateTest {
-            instructions: &[0x6D, 0x03, 0x00, 0x05],
-            initial_cpu_state: CpuState {
-                a: Some(0x01),
-                ..Default::default()
-            },
-            test_cpu_state: CpuState {
-                a: Some(0x06),
-                ..Default::default()
-            },
-            ..Default::default()
-        };
-
-        test_emulation_state(&est);
-    }
-
-    #[test]
-    fn adc_absolute_x() {
-        let est = EmulationStateTest {
-            instructions: &[0x7D, 0x03, 0x00, 0x00, 0x05],
-            initial_cpu_state: CpuState {
-                a: Some(0x01),
-                x: Some(0x01),
-                ..Default::default()
-            },
-            test_cpu_state: CpuState {
-                a: Some(0x06),
-                ..Default::default()
-            },
-            ..Default::default()
-        };
-
-        test_emulation_state(&est);
-    }
-
-    #[test]
-    fn adc_absolute_y() {
-        let est = EmulationStateTest {
-            instructions: &[0x79, 0x03, 0x00, 0x00, 0x05],
-            initial_cpu_state: CpuState {
-                a: Some(0x01),
-                y: Some(0x01),
-                ..Default::default()
-            },
-            test_cpu_state: CpuState {
-                a: Some(0x06),
-                ..Default::default()
-            },
-            ..Default::default()
-        };
-
-        test_emulation_state(&est);
-    }
-
-    #[test]
-    fn adc_indexed_indirect() {
-        let est = EmulationStateTest {
-            instructions: &[0x61, 0x01, 0x04, 0x00, 0x05],
-            initial_cpu_state: CpuState {
-                a: Some(0x01),
-                x: Some(0x01),
-                ..Default::default()
-            },
-            test_cpu_state: CpuState {
-                a: Some(0x06),
-                ..Default::default()
-            },
-            ..Default::default()
-        };
-
-        test_emulation_state(&est);
-    }
-
-    #[test]
-    fn adc_indirect_indexed() {
-        let est = EmulationStateTest {
-            instructions: &[0x71, 0x02, 0x03, 0x00, 0x05],
-            initial_cpu_state: CpuState {
-                a: Some(0x01),
-                y: Some(0x01),
-                ..Default::default()
-            },
-            test_cpu_state: CpuState {
-                a: Some(0x06),
                 ..Default::default()
             },
             ..Default::default()

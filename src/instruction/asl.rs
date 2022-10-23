@@ -121,7 +121,7 @@ mod tests {
     }
 
     #[test]
-    fn asl_accumulator() {
+    fn asl() {
         let est = EmulationStateTest {
             instructions: &[0x0A],
             initial_cpu_state: CpuState {
@@ -132,58 +132,6 @@ mod tests {
                 a: Some(0x40),
                 ..Default::default()
             },
-            ..Default::default()
-        };
-
-        test_emulation_state(&est);
-    }
-
-    #[test]
-    fn asl_zero_page() {
-        let est = EmulationStateTest {
-            instructions: &[0x06, 0x02, 0xA0],
-            mem_tests: &[(0x02, 0x40)],
-            ..Default::default()
-        };
-
-        test_emulation_state(&est);
-    }
-
-    #[test]
-    fn asl_zero_page_x() {
-        let est = EmulationStateTest {
-            instructions: &[0x16, 0x01, 0xA0],
-            initial_cpu_state: CpuState {
-                x: Some(0x01),
-                ..Default::default()
-            },
-            mem_tests: &[(0x02, 0x40)],
-            ..Default::default()
-        };
-
-        test_emulation_state(&est);
-    }
-
-    #[test]
-    fn asl_absolute() {
-        let est = EmulationStateTest {
-            instructions: &[0x0E, 0x03, 0x00, 0xA0],
-            mem_tests: &[(0x03, 0x40)],
-            ..Default::default()
-        };
-
-        test_emulation_state(&est);
-    }
-
-    #[test]
-    fn asl_absolute_x() {
-        let est = EmulationStateTest {
-            instructions: &[0x1E, 0x02, 0x00, 0xA0],
-            initial_cpu_state: CpuState {
-                x: Some(0x01),
-                ..Default::default()
-            },
-            mem_tests: &[(0x03, 0x40)],
             ..Default::default()
         };
 

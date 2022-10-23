@@ -67,42 +67,7 @@ mod tests {
     }
 
     #[test]
-    fn bit_zero_page() {
-        let est_true = EmulationStateTest {
-            instructions: &[0x24, 0x02, 0x0F],
-            initial_cpu_state: CpuState {
-                a: Some(0x0F),
-                ..Default::default()
-            },
-            test_cpu_state: CpuState {
-                ps: Some(PS::Z),
-                ..Default::default()
-            },
-            ..Default::default()
-        };
-
-        let est_false = EmulationStateTest {
-            instructions: &[0x24, 0x02, 0x0F],
-            initial_cpu_state: CpuState {
-                a: Some(0x01),
-                ..Default::default()
-            },
-            test_cpu_state: CpuState {
-                ps: Some(PS::empty()),
-                ..Default::default()
-            },
-            ..Default::default()
-        };
-
-        println!("BIT-zpg true:");
-        test_emulation_state(&est_true);
-
-        println!("BIT-zpg false:");
-        test_emulation_state(&est_false);
-    }
-
-    #[test]
-    fn bit_absolute() {
+    fn bit() {
         let est_true = EmulationStateTest {
             instructions: &[0x2C, 0x03, 0x00, 0x0F],
             initial_cpu_state: CpuState {
