@@ -3,6 +3,7 @@ use std::error::Error;
 use crate::{
     addressing_mode::{self, AddressingMode},
     instruction::Instruction,
+    r6502::PS,
     R6502,
 };
 
@@ -63,18 +64,39 @@ pub const CMP_INDIRECT_INDEXED: Instruction = Instruction {
 };
 
 pub fn cmp(cpu: &mut R6502, am: AddressingMode) -> Result<(), Box<dyn Error>> {
-    let _target = (am.call)(cpu)?;
+    let data = *(am.call)(cpu)?;
+
+    cpu.ps.set(PS::C, cpu.a >= data);
+    cpu.ps.set(PS::Z, cpu.a == data);
 
     Ok(())
 }
 
 #[cfg(test)]
 mod tests {
-    // use crate::test_utils::{test_emulation_state, CpuState, EmulationStateTest};
-    //
-    // #[test]
-    // fn cmp_immediate() {}
-    //
+    use crate::{
+        r6502::PS,
+        test_utils::{test_emulation_state, CpuState, EmulationStateTest},
+    };
+
+    #[test]
+    fn cmp_immediate() {
+        let est = EmulationStateTest {
+            instructions: &[0xC9, 0x69],
+            initial_cpu_state: CpuState {
+                a: Some(0x69),
+                ..Default::default()
+            },
+            test_cpu_state: CpuState {
+                ps: Some(PS::C | PS::Z),
+                ..Default::default()
+            },
+            ..Default::default()
+        };
+
+        test_emulation_state(&est);
+    }
+
     // #[test]
     // fn cmp_zero_page() {}
     //
