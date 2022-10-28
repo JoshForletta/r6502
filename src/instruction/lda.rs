@@ -3,6 +3,7 @@ use std::error::Error;
 use crate::{
     addressing_mode::{self, AddressingMode},
     instruction::Instruction,
+    r6502::PS,
     R6502,
 };
 
@@ -63,36 +64,60 @@ pub const LDA_INDIRECT_INDEXED: Instruction = Instruction {
 };
 
 pub fn lda(cpu: &mut R6502, am: AddressingMode) -> Result<(), Box<dyn Error>> {
-    let _target = (am.call)(cpu)?;
+    cpu.a = *(am.call)(cpu)?;
+
+    cpu.ps.set(PS::Z, cpu.a == 0);
+    cpu.ps.set(PS::N, (cpu.a & 0x80) != 0);
 
     Ok(())
 }
 
 #[cfg(test)]
 mod tests {
-    // use crate::test_utils::{test_emulation_state, CpuState, EmulationStateTest};
-    //
-    // #[test]
-    // fn lda_immediate() {}
-    //
-    // #[test]
-    // fn lda_zero_page() {}
-    //
-    // #[test]
-    // fn lda_zero_page_x() {}
-    //
-    // #[test]
-    // fn lda_absolute() {}
-    //
-    // #[test]
-    // fn lda_absolute_x() {}
-    //
-    // #[test]
-    // fn lda_absolute_y() {}
-    //
-    // #[test]
-    // fn lda_indexed_indirect() {}
-    //
-    // #[test]
-    // fn lda_indirect_indexed() {}
+    use crate::{
+        r6502::PS,
+        test_utils::{test_emulation_state, CpuState, EmulationStateTest},
+    };
+
+    #[test]
+    fn lda_zero_flag() {
+        let est = EmulationStateTest {
+            instructions: &[0xA9, 0x00],
+            test_cpu_state: CpuState {
+                ps: Some(PS::Z),
+                ..Default::default()
+            },
+            ..Default::default()
+        };
+
+        test_emulation_state(&est);
+    }
+
+    #[test]
+    fn lda_negative_flag() {
+        let est = EmulationStateTest {
+            instructions: &[0xA9, 0x80],
+            test_cpu_state: CpuState {
+                ps: Some(PS::N),
+                ..Default::default()
+            },
+            ..Default::default()
+        };
+
+        test_emulation_state(&est);
+    }
+
+    #[test]
+    fn lda() {
+        let est = EmulationStateTest {
+            instructions: &[0xA9, 0x69],
+            test_cpu_state: CpuState {
+                a: Some(0x69),
+                ..Default::default()
+            },
+            ..Default::default()
+        };
+
+        test_emulation_state(&est);
+    }
 }
