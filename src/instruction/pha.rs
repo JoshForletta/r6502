@@ -13,16 +13,28 @@ pub const PHA_IMPLIED: Instruction = Instruction {
     call: pha,
 };
 
-pub fn pha(cpu: &mut R6502, am: AddressingMode) -> Result<(), Box<dyn Error>> {
-    let _target = (am.call)(cpu)?;
+pub fn pha(cpu: &mut R6502, _am: AddressingMode) -> Result<(), Box<dyn Error>> {
+    cpu.push(cpu.a)?;
 
     Ok(())
 }
 
 #[cfg(test)]
 mod tests {
-    // use crate::test_utils::{test_emulation_state, CpuState, EmulationStateTest};
-    //
-    // #[test]
-    // fn pha_implied() {}
+    use crate::test_utils::{test_emulation_state, CpuState, EmulationStateTest};
+
+    #[test]
+    fn pha() {
+        let est = EmulationStateTest {
+            instructions: &[0x48],
+            initial_cpu_state: CpuState {
+                a: Some(0x69),
+                ..Default::default()
+            },
+            mem_tests: &[(0x0100, 0x69)],
+            ..Default::default()
+        };
+
+        test_emulation_state(&est);
+    }
 }
