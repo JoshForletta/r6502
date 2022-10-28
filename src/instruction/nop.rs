@@ -13,16 +13,25 @@ pub const NOP_IMPLIED: Instruction = Instruction {
     call: nop,
 };
 
-pub fn nop(cpu: &mut R6502, am: AddressingMode) -> Result<(), Box<dyn Error>> {
-    let _target = (am.call)(cpu)?;
-
+pub fn nop(_cpu: &mut R6502, _am: AddressingMode) -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
 #[cfg(test)]
 mod tests {
-    // use crate::test_utils::{test_emulation_state, CpuState, EmulationStateTest};
-    //
-    // #[test]
-    // fn nop_implied() {}
+    use crate::test_utils::{test_emulation_state, CpuState, EmulationStateTest};
+
+    #[test]
+    fn nop() {
+        let est = EmulationStateTest {
+            instructions: &[0xEA],
+            test_cpu_state: CpuState {
+                pc: Some(0x01),
+                ..Default::default()
+            },
+            ..Default::default()
+        };
+
+        test_emulation_state(&est);
+    }
 }
