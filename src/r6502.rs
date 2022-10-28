@@ -36,6 +36,7 @@ pub struct R6502 {
     pub pc: u16,  // Program Counter
     pub sp: u8,   // Stack Pointer
     pub bus: Bus, // 16bit address bus and 8bit data bus
+    pub target_address: u16,
     pub extra_cycles: u8,
     pub null_pointer: u8, // for implied addressing mode
 }

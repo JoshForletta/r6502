@@ -58,6 +58,7 @@ pub fn test_emulation_state(est: &EmulationStateTest) {
         pc: est.initial_cpu_state.pc.unwrap_or(Default::default()),
         sp: est.initial_cpu_state.sp.unwrap_or(Default::default()),
         bus: Default::default(),
+        target_address: 0x00,
         extra_cycles: est
             .initial_cpu_state
             .extra_cycles

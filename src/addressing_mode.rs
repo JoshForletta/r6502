@@ -25,15 +25,11 @@ pub const ABSOLUTE: AddressingMode = AddressingMode {
 };
 
 pub fn absolute(cpu: &mut R6502) -> Result<&mut u8, Box<dyn Error>> {
-    let addr = match cpu.read_word() {
-        Ok(addr) => addr,
-        Err(e) => return Err(e.into()),
-    };
+    let addr = cpu.read_word()?;
 
-    match cpu.bus.read_mut(addr) {
-        Ok(t) => Ok(t),
-        Err(e) => Err(e.into()),
-    }
+    cpu.target_address = addr;
+
+    Ok(cpu.bus.read_mut(addr)?)
 }
 
 pub const ABSOLUTE_X: AddressingMode = AddressingMode {
@@ -42,21 +38,17 @@ pub const ABSOLUTE_X: AddressingMode = AddressingMode {
 };
 
 pub fn absolute_x(cpu: &mut R6502) -> Result<&mut u8, Box<dyn Error>> {
-    let mut addr = match cpu.read_word() {
-        Ok(addr) => addr,
-        Err(e) => return Err(e.into()),
-    };
+    let mut addr = cpu.read_word()?;
 
     let page = addr & 0xff00;
 
     addr += cpu.x as u16;
 
+    cpu.target_address = addr;
+
     cpu.ps.set(PS::P, page == (addr & 0xff00));
 
-    match cpu.bus.read_mut(addr) {
-        Ok(t) => Ok(t),
-        Err(e) => Err(e.into()),
-    }
+    Ok(cpu.bus.read_mut(addr)?)
 }
 
 pub const ABSOLUTE_Y: AddressingMode = AddressingMode {
@@ -65,21 +57,17 @@ pub const ABSOLUTE_Y: AddressingMode = AddressingMode {
 };
 
 pub fn absolute_y(cpu: &mut R6502) -> Result<&mut u8, Box<dyn Error>> {
-    let mut addr = match cpu.read_word() {
-        Ok(addr) => addr,
-        Err(e) => return Err(e.into()),
-    };
+    let mut addr = cpu.read_word()?;
 
     let page = addr & 0xff00;
 
     addr += cpu.y as u16;
 
+    cpu.target_address = addr;
+
     cpu.ps.set(PS::P, page == (addr & 0xff00));
 
-    match cpu.bus.read_mut(addr) {
-        Ok(t) => Ok(t),
-        Err(e) => Err(e.into()),
-    }
+    Ok(cpu.bus.read_mut(addr)?)
 }
 
 pub const IMMEDIATE: AddressingMode = AddressingMode {
@@ -88,7 +76,8 @@ pub const IMMEDIATE: AddressingMode = AddressingMode {
 };
 
 pub fn immediate(cpu: &mut R6502) -> Result<&mut u8, Box<dyn Error>> {
-    cpu.read_mut().or_else(|e| Err(e.into()))
+    cpu.target_address = cpu.pc;
+    Ok(cpu.read_mut()?)
 }
 
 pub const IMPLIED: AddressingMode = AddressingMode {
@@ -106,7 +95,12 @@ pub const INDIRECT: AddressingMode = AddressingMode {
 };
 
 pub fn indirect(cpu: &mut R6502) -> Result<&mut u8, Box<dyn Error>> {
-    Ok(&mut cpu.null_pointer)
+    let addr = cpu.read_word()?;
+    let addr = cpu.bus.read_word(addr)?;
+
+    cpu.target_address = addr;
+
+    Ok(cpu.bus.read_mut(addr)?)
 }
 
 pub const INDEXED_INDIRECT: AddressingMode = AddressingMode {
@@ -115,19 +109,15 @@ pub const INDEXED_INDIRECT: AddressingMode = AddressingMode {
 };
 
 pub fn indexed_indirect(cpu: &mut R6502) -> Result<&mut u8, Box<dyn Error>> {
-    let mut addr = match cpu.read() {
-        Ok(addr) => addr,
-        Err(e) => return Err(e.into()),
-    };
+    let mut addr = cpu.read()?;
 
     addr = (Wrapping(addr) + Wrapping(cpu.x)).0;
 
-    let addr = match cpu.bus.read_word(addr as u16) {
-        Ok(addr) => addr,
-        Err(e) => return Err(e.into()),
-    };
+    let addr = cpu.bus.read_word(addr as u16)?;
 
-    cpu.bus.read_mut(addr).or_else(|e| Err(e.into()))
+    cpu.target_address = addr;
+
+    Ok(cpu.bus.read_mut(addr)?)
 }
 
 pub const INDIRECT_INDEXED: AddressingMode = AddressingMode {
@@ -136,23 +126,19 @@ pub const INDIRECT_INDEXED: AddressingMode = AddressingMode {
 };
 
 pub fn indirect_indexed(cpu: &mut R6502) -> Result<&mut u8, Box<dyn Error>> {
-    let addr = match cpu.read() {
-        Ok(addr) => addr,
-        Err(e) => return Err(e.into()),
-    };
+    let addr = cpu.read()?;
 
-    let mut addr = match cpu.bus.read_word(addr as u16) {
-        Ok(addr) => addr,
-        Err(e) => return Err(e.into()),
-    };
+    let mut addr = cpu.bus.read_word(addr as u16)?;
 
     let page = addr & 0xff00;
 
     addr = (Wrapping(addr) + Wrapping(cpu.y.into())).0;
 
+    cpu.target_address = addr;
+
     cpu.ps.set(PS::P, page == (addr & 0xff00));
 
-    cpu.bus.read_mut(addr.into()).or_else(|e| Err(e.into()))
+    Ok(cpu.bus.read_mut(addr)?)
 }
 
 pub const RELATIVE: AddressingMode = AddressingMode {
@@ -161,7 +147,8 @@ pub const RELATIVE: AddressingMode = AddressingMode {
 };
 
 pub fn relative(cpu: &mut R6502) -> Result<&mut u8, Box<dyn Error>> {
-    cpu.read_mut().or_else(|e| Err(e.into()))
+    cpu.target_address = cpu.pc;
+    Ok(cpu.read_mut()?)
 }
 
 pub const ZERO_PAGE: AddressingMode = AddressingMode {
@@ -170,12 +157,11 @@ pub const ZERO_PAGE: AddressingMode = AddressingMode {
 };
 
 pub fn zero_page(cpu: &mut R6502) -> Result<&mut u8, Box<dyn Error>> {
-    let addr = match cpu.read() {
-        Ok(addr) => addr,
-        Err(e) => return Err(e.into()),
-    };
+    let addr = cpu.read()? as u16;
 
-    cpu.bus.read_mut(addr.into()).or_else(|e| Err(e.into()))
+    cpu.target_address = addr;
+
+    Ok(cpu.bus.read_mut(addr)?)
 }
 
 pub const ZERO_PAGE_X: AddressingMode = AddressingMode {
@@ -184,14 +170,13 @@ pub const ZERO_PAGE_X: AddressingMode = AddressingMode {
 };
 
 pub fn zero_page_x(cpu: &mut R6502) -> Result<&mut u8, Box<dyn Error>> {
-    let mut addr = match cpu.read() {
-        Ok(addr) => addr,
-        Err(e) => return Err(e.into()),
-    };
+    let mut addr = cpu.read()?;
 
     addr = (Wrapping(addr) + Wrapping(cpu.x)).0;
 
-    cpu.bus.read_mut(addr.into()).or_else(|e| Err(e.into()))
+    cpu.target_address = addr as u16;
+
+    Ok(cpu.bus.read_mut(addr as u16)?)
 }
 
 pub const ZERO_PAGE_Y: AddressingMode = AddressingMode {
@@ -200,12 +185,11 @@ pub const ZERO_PAGE_Y: AddressingMode = AddressingMode {
 };
 
 pub fn zero_page_y(cpu: &mut R6502) -> Result<&mut u8, Box<dyn Error>> {
-    let mut addr = match cpu.read() {
-        Ok(addr) => addr,
-        Err(e) => return Err(e.into()),
-    };
+    let mut addr = cpu.read()?;
 
     addr = (Wrapping(addr) + Wrapping(cpu.y)).0;
 
-    cpu.bus.read_mut(addr.into()).or_else(|e| Err(e.into()))
+    cpu.target_address = addr as u16;
+
+    Ok(cpu.bus.read_mut(addr as u16)?)
 }
