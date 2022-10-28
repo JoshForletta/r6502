@@ -13,16 +13,31 @@ pub const PHP_IMPLIED: Instruction = Instruction {
     call: php,
 };
 
-pub fn php(cpu: &mut R6502, am: AddressingMode) -> Result<(), Box<dyn Error>> {
-    let _target = (am.call)(cpu)?;
+pub fn php(cpu: &mut R6502, _am: AddressingMode) -> Result<(), Box<dyn Error>> {
+    cpu.push(cpu.ps.bits())?;
 
     Ok(())
 }
 
 #[cfg(test)]
 mod tests {
-    // use crate::test_utils::{test_emulation_state, CpuState, EmulationStateTest};
-    //
-    // #[test]
-    // fn php_implied() {}
+    use crate::{
+        r6502::PS,
+        test_utils::{test_emulation_state, CpuState, EmulationStateTest},
+    };
+
+    #[test]
+    fn php() {
+        let est = EmulationStateTest {
+            instructions: &[0x08],
+            initial_cpu_state: CpuState {
+                ps: Some(PS::C | PS::N),
+                ..Default::default()
+            },
+            mem_tests: &[(0x0100, (PS::C | PS::N).bits())],
+            ..Default::default()
+        };
+
+        test_emulation_state(&est);
+    }
 }
