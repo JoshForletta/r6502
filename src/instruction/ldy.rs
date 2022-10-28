@@ -3,6 +3,7 @@ use std::error::Error;
 use crate::{
     addressing_mode::{self, AddressingMode},
     instruction::Instruction,
+    r6502::PS,
     R6502,
 };
 
@@ -42,27 +43,60 @@ pub const LDY_ABSOLUTE_X: Instruction = Instruction {
 };
 
 pub fn ldy(cpu: &mut R6502, am: AddressingMode) -> Result<(), Box<dyn Error>> {
-    let _target = (am.call)(cpu)?;
+    cpu.y = *(am.call)(cpu)?;
+
+    cpu.ps.set(PS::Z, cpu.y == 0);
+    cpu.ps.set(PS::N, (cpu.y & 0x80) != 0);
 
     Ok(())
 }
 
 #[cfg(test)]
 mod tests {
-    // use crate::test_utils::{test_emulation_state, CpuState, EmulationStateTest};
-    //
-    // #[test]
-    // fn ldy_immediate() {}
-    //
-    // #[test]
-    // fn ldy_zero_page() {}
-    //
-    // #[test]
-    // fn ldy_zero_page_x() {}
-    //
-    // #[test]
-    // fn ldy_absolute() {}
-    //
-    // #[test]
-    // fn ldy_absolute_x() {}
+    use crate::{
+        r6502::PS,
+        test_utils::{test_emulation_state, CpuState, EmulationStateTest},
+    };
+
+    #[test]
+    fn ldy_zero_flag() {
+        let est = EmulationStateTest {
+            instructions: &[0xA0, 0x00],
+            test_cpu_state: CpuState {
+                ps: Some(PS::Z),
+                ..Default::default()
+            },
+            ..Default::default()
+        };
+
+        test_emulation_state(&est);
+    }
+
+    #[test]
+    fn ldy_negative_flag() {
+        let est = EmulationStateTest {
+            instructions: &[0xA0, 0x80],
+            test_cpu_state: CpuState {
+                ps: Some(PS::N),
+                ..Default::default()
+            },
+            ..Default::default()
+        };
+
+        test_emulation_state(&est);
+    }
+
+    #[test]
+    fn ldy() {
+        let est = EmulationStateTest {
+            instructions: &[0xA0, 0x69],
+            test_cpu_state: CpuState {
+                y: Some(0x69),
+                ..Default::default()
+            },
+            ..Default::default()
+        };
+
+        test_emulation_state(&est);
+    }
 }
