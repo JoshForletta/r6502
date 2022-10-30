@@ -13,16 +13,31 @@ pub const TSX_IMPLIED: Instruction = Instruction {
     call: tsx,
 };
 
-pub fn tsx(cpu: &mut R6502, am: AddressingMode) -> Result<(), Box<dyn Error>> {
-    let _target = (am.call)(cpu)?;
+pub fn tsx(cpu: &mut R6502, _am: AddressingMode) -> Result<(), Box<dyn Error>> {
+    cpu.x = cpu.sp;
 
     Ok(())
 }
 
 #[cfg(test)]
 mod tests {
-    // use crate::test_utils::{test_emulation_state, CpuState, EmulationStateTest};
-    //
-    // #[test]
-    // fn tsx_implied() {}
+    use crate::test_utils::{test_emulation_state, CpuState, EmulationStateTest};
+
+    #[test]
+    fn tsx() {
+        let est = EmulationStateTest {
+            instructions: &[0xBA],
+            initial_cpu_state: CpuState {
+                sp: Some(0x69),
+                ..Default::default()
+            },
+            test_cpu_state: CpuState {
+                x: Some(0x69),
+                ..Default::default()
+            },
+            ..Default::default()
+        };
+
+        test_emulation_state(&est);
+    }
 }
