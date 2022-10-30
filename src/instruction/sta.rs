@@ -56,33 +56,27 @@ pub const STA_INDIRECT_INDEXED: Instruction = Instruction {
 };
 
 pub fn sta(cpu: &mut R6502, am: AddressingMode) -> Result<(), Box<dyn Error>> {
-    let _target = (am.call)(cpu)?;
+    *(am.call)(cpu)? = cpu.a;
 
     Ok(())
 }
 
 #[cfg(test)]
 mod tests {
-    // use crate::test_utils::{test_emulation_state, CpuState, EmulationStateTest};
-    //
-    // #[test]
-    // fn sta_zero_page() {}
-    //
-    // #[test]
-    // fn sta_zero_page_x() {}
-    //
-    // #[test]
-    // fn sta_absolute() {}
-    //
-    // #[test]
-    // fn sta_absolute_x() {}
-    //
-    // #[test]
-    // fn sta_absolute_y() {}
-    //
-    // #[test]
-    // fn sta_indexed_indirect() {}
-    //
-    // #[test]
-    // fn sta_indirect_indexed() {}
+    use crate::test_utils::{test_emulation_state, CpuState, EmulationStateTest};
+
+    #[test]
+    fn sta() {
+        let est = EmulationStateTest {
+            instructions: &[0x85, 0x02],
+            initial_cpu_state: CpuState {
+                a: Some(0x69),
+                ..Default::default()
+            },
+            mem_tests: &[(0x0002, 0x69)],
+            ..Default::default()
+        };
+
+        test_emulation_state(&est);
+    }
 }
