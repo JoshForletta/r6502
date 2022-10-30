@@ -3,6 +3,7 @@ use std::error::Error;
 use crate::{
     addressing_mode::{self, AddressingMode},
     instruction::Instruction,
+    r6502::PS,
     R6502,
 };
 
@@ -63,36 +64,128 @@ pub const SBC_INDIRECT_INDEXED: Instruction = Instruction {
 };
 
 pub fn sbc(cpu: &mut R6502, am: AddressingMode) -> Result<(), Box<dyn Error>> {
-    let _target = (am.call)(cpu)?;
+    let data = (*(am.call)(cpu)? as u16) ^ 0x00FF;
+    let carry = (!cpu.ps.contains(PS::C)) as u16;
+    let accumulator = cpu.a as u16;
+
+    let sum = accumulator + data + carry;
+
+    cpu.ps.set(
+        PS::V,
+        (!(accumulator ^ data) & (accumulator ^ sum) & 0x0080) != 0,
+    );
+
+    let (carry, sum) = ((sum >> 8) as u8, sum as u8);
+
+    cpu.ps.set(PS::C, carry != 0);
+    cpu.ps.set(PS::Z, sum == 0);
+    cpu.ps.set(PS::N, (sum & 0x80) != 0);
+
+    cpu.a = sum;
+
+    if cpu.ps.contains(PS::P) {
+        cpu.extra_cycles += 1;
+    }
 
     Ok(())
 }
 
 #[cfg(test)]
 mod tests {
-    // use crate::test_utils::{test_emulation_state, CpuState, EmulationStateTest};
-    //
-    // #[test]
-    // fn sbc_immediate() {}
-    //
-    // #[test]
-    // fn sbc_zero_page() {}
-    //
-    // #[test]
-    // fn sbc_zero_page_x() {}
-    //
-    // #[test]
-    // fn sbc_absolute() {}
-    //
-    // #[test]
-    // fn sbc_absolute_x() {}
-    //
-    // #[test]
-    // fn sbc_absolute_y() {}
-    //
-    // #[test]
-    // fn sbc_indexed_indirect() {}
-    //
-    // #[test]
-    // fn sbc_indirect_indexed() {}
+    use crate::{
+        r6502::PS,
+        test_utils::{test_emulation_state, CpuState, EmulationStateTest},
+    };
+
+    #[test]
+    fn sbc_carry_flag() {
+        let est = EmulationStateTest {
+            instructions: &[0xE9, 0xFD],
+            initial_cpu_state: CpuState {
+                a: Some(0xFF),
+                ..Default::default()
+            },
+            test_cpu_state: CpuState {
+                ps: Some(PS::C),
+                ..Default::default()
+            },
+            clock_cycles: 2,
+            ..Default::default()
+        };
+
+        test_emulation_state(&est);
+    }
+
+    #[test]
+    fn sbc_zero_flag() {
+        let est = EmulationStateTest {
+            instructions: &[0xE9, 0x01],
+            initial_cpu_state: CpuState {
+                a: Some(0x01),
+                ..Default::default()
+            },
+            test_cpu_state: CpuState {
+                ps: Some(PS::Z | PS::C),
+                ..Default::default()
+            },
+            ..Default::default()
+        };
+
+        test_emulation_state(&est);
+    }
+
+    #[test]
+    fn sbc_overflow_flag() {
+        let est = EmulationStateTest {
+            instructions: &[0xE9, 0xFE],
+            initial_cpu_state: CpuState {
+                a: Some(0x7F),
+                ..Default::default()
+            },
+            test_cpu_state: CpuState {
+                ps: Some(PS::V | PS::N),
+                ..Default::default()
+            },
+            ..Default::default()
+        };
+
+        test_emulation_state(&est);
+    }
+
+    #[test]
+    fn sbc_negative_flag() {
+        let est = EmulationStateTest {
+            instructions: &[0xE9, 0x7F],
+            initial_cpu_state: CpuState {
+                a: Some(0x05),
+                ..Default::default()
+            },
+            test_cpu_state: CpuState {
+                ps: Some(PS::N),
+                ..Default::default()
+            },
+            clock_cycles: 2,
+            ..Default::default()
+        };
+
+        test_emulation_state(&est);
+    }
+
+    #[test]
+    fn sbc() {
+        let est = EmulationStateTest {
+            instructions: &[0xE9, 0x01],
+            initial_cpu_state: CpuState {
+                a: Some(0x02),
+                ..Default::default()
+            },
+            test_cpu_state: CpuState {
+                a: Some(0x01),
+                ..Default::default()
+            },
+            ..Default::default()
+        };
+
+        test_emulation_state(&est);
+    }
 }
