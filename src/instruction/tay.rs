@@ -13,16 +13,31 @@ pub const TAY_IMPLIED: Instruction = Instruction {
     call: tay,
 };
 
-pub fn tay(cpu: &mut R6502, am: AddressingMode) -> Result<(), Box<dyn Error>> {
-    let _target = (am.call)(cpu)?;
+pub fn tay(cpu: &mut R6502, _am: AddressingMode) -> Result<(), Box<dyn Error>> {
+    cpu.y = cpu.a;
 
     Ok(())
 }
 
 #[cfg(test)]
 mod tests {
-    // use crate::test_utils::{test_emulation_state, CpuState, EmulationStateTest};
-    //
-    // #[test]
-    // fn tay_implied() {}
+    use crate::test_utils::{test_emulation_state, CpuState, EmulationStateTest};
+
+    #[test]
+    fn tay() {
+        let est = EmulationStateTest {
+            instructions: &[0xA8],
+            initial_cpu_state: CpuState {
+                a: Some(0x69),
+                ..Default::default()
+            },
+            test_cpu_state: CpuState {
+                y: Some(0x69),
+                ..Default::default()
+            },
+            ..Default::default()
+        };
+
+        test_emulation_state(&est);
+    }
 }
