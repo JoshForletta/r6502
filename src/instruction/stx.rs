@@ -28,21 +28,27 @@ pub const STX_ABSOLUTE: Instruction = Instruction {
 };
 
 pub fn stx(cpu: &mut R6502, am: AddressingMode) -> Result<(), Box<dyn Error>> {
-    let _target = (am.call)(cpu)?;
+    *(am.call)(cpu)? = cpu.x;
 
     Ok(())
 }
 
 #[cfg(test)]
 mod tests {
-    // use crate::test_utils::{test_emulation_state, CpuState, EmulationStateTest};
-    //
-    // #[test]
-    // fn stx_zero_page() {}
-    //
-    // #[test]
-    // fn stx_zero_page_y() {}
-    //
-    // #[test]
-    // fn stx_absolute() {}
+    use crate::test_utils::{test_emulation_state, CpuState, EmulationStateTest};
+
+    #[test]
+    fn stx() {
+        let est = EmulationStateTest {
+            instructions: &[0x86, 0x02],
+            initial_cpu_state: CpuState {
+                x: Some(0x69),
+                ..Default::default()
+            },
+            mem_tests: &[(0x0002, 0x69)],
+            ..Default::default()
+        };
+
+        test_emulation_state(&est);
+    }
 }
