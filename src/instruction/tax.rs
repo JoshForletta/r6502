@@ -13,16 +13,31 @@ pub const TAX_IMPLIED: Instruction = Instruction {
     call: tax,
 };
 
-pub fn tax(cpu: &mut R6502, am: AddressingMode) -> Result<(), Box<dyn Error>> {
-    let _target = (am.call)(cpu)?;
+pub fn tax(cpu: &mut R6502, _am: AddressingMode) -> Result<(), Box<dyn Error>> {
+    cpu.x = cpu.a;
 
     Ok(())
 }
 
 #[cfg(test)]
 mod tests {
-    // use crate::test_utils::{test_emulation_state, CpuState, EmulationStateTest};
-    //
-    // #[test]
-    // fn tax_implied() {}
+    use crate::test_utils::{test_emulation_state, CpuState, EmulationStateTest};
+
+    #[test]
+    fn tax() {
+        let est = EmulationStateTest {
+            instructions: &[0xAA],
+            initial_cpu_state: CpuState {
+                a: Some(0x69),
+                ..Default::default()
+            },
+            test_cpu_state: CpuState {
+                x: Some(0x69),
+                ..Default::default()
+            },
+            ..Default::default()
+        };
+
+        test_emulation_state(&est);
+    }
 }
