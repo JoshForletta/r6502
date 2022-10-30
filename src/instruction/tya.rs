@@ -13,16 +13,31 @@ pub const TYA_IMPLIED: Instruction = Instruction {
     call: tya,
 };
 
-pub fn tya(cpu: &mut R6502, am: AddressingMode) -> Result<(), Box<dyn Error>> {
-    let _target = (am.call)(cpu)?;
+pub fn tya(cpu: &mut R6502, _am: AddressingMode) -> Result<(), Box<dyn Error>> {
+    cpu.a = cpu.y;
 
     Ok(())
 }
 
 #[cfg(test)]
 mod tests {
-    // use crate::test_utils::{test_emulation_state, CpuState, EmulationStateTest};
-    //
-    // #[test]
-    // fn tya_implied() {}
+    use crate::test_utils::{test_emulation_state, CpuState, EmulationStateTest};
+
+    #[test]
+    fn tya() {
+        let est = EmulationStateTest {
+            instructions: &[0x98],
+            initial_cpu_state: CpuState {
+                y: Some(0x69),
+                ..Default::default()
+            },
+            test_cpu_state: CpuState {
+                a: Some(0x69),
+                ..Default::default()
+            },
+            ..Default::default()
+        };
+
+        test_emulation_state(&est);
+    }
 }
