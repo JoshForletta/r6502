@@ -2,6 +2,8 @@ use std::{error::Error, fmt::Debug, ops::Range};
 
 pub mod ram;
 pub use ram::Ram;
+pub mod output;
+pub use output::Output;
 
 use crate::error::DeviceError;
 
