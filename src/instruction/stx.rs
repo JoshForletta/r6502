@@ -28,7 +28,8 @@ pub const STX_ABSOLUTE: Instruction = Instruction {
 };
 
 pub fn stx(cpu: &mut R6502, am: AddressingMode) -> Result<(), Box<dyn Error>> {
-    *(am.call)(cpu)? = cpu.x;
+    (am.call)(cpu)?;
+    cpu.bus.write(cpu.target_address, cpu.x)?;
 
     Ok(())
 }

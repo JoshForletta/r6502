@@ -56,7 +56,8 @@ pub const STA_INDIRECT_INDEXED: Instruction = Instruction {
 };
 
 pub fn sta(cpu: &mut R6502, am: AddressingMode) -> Result<(), Box<dyn Error>> {
-    *(am.call)(cpu)? = cpu.a;
+    (am.call)(cpu)?;
+    cpu.bus.write(cpu.target_address, cpu.a)?;
 
     Ok(())
 }

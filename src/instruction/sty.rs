@@ -28,7 +28,8 @@ pub const STY_ABSOLUTE: Instruction = Instruction {
 };
 
 pub fn sty(cpu: &mut R6502, am: AddressingMode) -> Result<(), Box<dyn Error>> {
-    *(am.call)(cpu)? = cpu.y;
+    (am.call)(cpu)?;
+    cpu.bus.write(cpu.target_address, cpu.y)?;
 
     Ok(())
 }
