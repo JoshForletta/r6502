@@ -83,9 +83,8 @@ impl Bus {
         for d in &mut self.devices {
             if d.contains(addr) {
                 no_device = false;
-                match d.get_mut(addr) {
-                    Ok(target) => *target = data,
-                    Err(_) => (),
+                if let Err(e) = d.set(addr, data) {
+                    return Err(BusError::FailedWrite(addr, data, Some(e.into())));
                 };
             }
         }
